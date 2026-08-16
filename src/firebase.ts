@@ -6,9 +6,9 @@ import { getStorage } from 'firebase/storage';
 // Firebase configuration from environment or fallback default demo project
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDemoEurekaKeyForDevMode2026",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "eureka-pitch-2026.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "eureka-pitch-2026",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "eureka-pitch-2026.appspot.com",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "e-cell-4c7ec.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "e-cell-4c7ec",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "e-cell-4c7ec.firebasestorage.app",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "109876543210",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:109876543210:web:abcdef123456"
 };

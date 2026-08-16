@@ -75,7 +75,7 @@ export class FirebaseService {
       });
       console.log('✅ Registration saved to Firebase Firestore ID:', registrationId);
     } catch (err) {
-      console.warn('Persisted to local storage (Firebase offline):', err);
+      console.error('❌ Firebase Save Error:', err);
     }
 
     return newTeam;
