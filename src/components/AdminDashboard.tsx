@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ShieldCheck, Search, Download, FileText, Lock, LogOut, Users, Mail, Phone, Building } from 'lucide-react';
 import type { TeamRegistration, RegistrationStatus, TeamMember } from '../types';
 import { StorageService } from '../services/storageService';
+import { openPitchDeck } from '../utils/pitchDeck';
 
 interface AdminDashboardProps {
   teams: TeamRegistration[];
@@ -556,14 +557,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             {/* Actions */}
             <div className="flex items-center justify-between pt-4 border-t border-slate-800">
-              <a
-                href={selectedTeam.pitchDeckUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-xl bg-amber-500 text-black font-bold text-xs flex items-center gap-2 hover:bg-amber-400 transition-all"
+              <button
+                type="button"
+                onClick={() => openPitchDeck(selectedTeam.pitchDeckUrl, selectedTeam.pitchDeckFileName)}
+                className="px-4 py-2.5 rounded-xl bg-amber-500 text-black font-bold text-xs flex items-center gap-2 hover:bg-amber-400 transition-all cursor-pointer shadow-md"
               >
                 <FileText className="w-4 h-4" /> Open Pitch Deck File
-              </a>
+              </button>
 
               <button
                 onClick={() => setSelectedTeam(null)}

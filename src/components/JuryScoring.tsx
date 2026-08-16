@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Trophy, Award, Sparkles, FileText, Send, Medal } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import type { TeamRegistration, JuryScore } from '../types';
+import { openPitchDeck } from '../utils/pitchDeck';
 
 interface JuryScoringProps {
   teams: TeamRegistration[];
@@ -152,14 +153,13 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
 
               <div className="p-3.5 rounded-xl bg-[#050814] border border-slate-800 flex items-center justify-between text-xs">
                 <span className="text-slate-300 font-medium">Presentation Deck:</span>
-                <a
-                  href={currentTeam.pitchDeckUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-amber-400 hover:underline font-bold flex items-center gap-1"
+                <button
+                  type="button"
+                  onClick={() => openPitchDeck(currentTeam.pitchDeckUrl, currentTeam.pitchDeckFileName)}
+                  className="text-amber-400 hover:underline font-bold flex items-center gap-1 cursor-pointer"
                 >
                   <FileText className="w-4 h-4" /> Open Pitch Deck
-                </a>
+                </button>
               </div>
 
               <div className="space-y-4">
