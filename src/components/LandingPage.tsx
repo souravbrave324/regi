@@ -68,7 +68,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartRegistration })
               </h1>
 
               <p className="text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
-                Welcome to the <strong>Eureka! Pitching Competition</strong> portal. Submit your startup details, upload your pitch deck, and get evaluated by top VC jury panels in the Zonal rounds.
+                Welcome to the <strong>NEC 2026 Pitching Competition</strong> portal. Submit your startup details, upload your pitch deck, and get evaluated by top VC jury panels in the Zonal rounds.
               </p>
 
               {/* Pitch Format Card */}
@@ -101,7 +101,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartRegistration })
                   rel="noopener noreferrer"
                   className="px-6 py-4 rounded-2xl bg-[#0B1120] hover:bg-slate-800 text-slate-200 font-semibold border border-slate-700/80 hover:border-slate-500 transition-all flex items-center gap-2 text-sm"
                 >
-                  Official Eureka! Portal
+                  Official NEC Portal
                   <ExternalLink className="w-4 h-4 text-slate-400" />
                 </a>
               </div>

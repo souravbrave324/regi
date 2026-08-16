@@ -36,14 +36,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-heading font-extrabold text-xl text-white tracking-wide">
-                  EUREKA! <span className="text-amber-400">2026</span>
+                  NEC <span className="text-amber-400">2026</span>
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full badge-glow-amber">
                   Official Portal
                 </span>
               </div>
               <p className="text-[11px] text-purple-300 font-semibold hidden sm:block">
-                E-Cell IIT Bombay • X//O Labs
+                E-Cell IIT Bombay • NEC Referral Portal
               </p>
             </div>
           </div>

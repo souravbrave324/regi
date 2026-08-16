@@ -16,10 +16,10 @@ export const Footer: React.FC = () => {
             />
             <div>
               <span className="font-heading font-extrabold text-lg text-white block">
-                EUREKA! <span className="text-amber-400">2026</span>
+                NEC <span className="text-amber-400">2026</span>
               </span>
               <span className="text-[11px] text-purple-400 font-semibold block">
-                E-Cell IIT Bombay • X//O Labs
+                E-Cell IIT Bombay • National Entrepreneurship Challenge
               </span>
             </div>
           </div>
@@ -56,14 +56,14 @@ export const Footer: React.FC = () => {
           <ul className="space-y-1.5">
             <li>E-Cell IIT Bombay (NEC)</li>
             <li>X//O Labs Entrepreneurship Desk</li>
-            <li>Support Email: eureka@ecell.in</li>
+            <li>Support Email: nec@ecell.in</li>
           </ul>
         </div>
 
       </div>
 
       <div className="max-w-7xl mx-auto border-t border-slate-900 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
-        <span>© 2026 Eureka! Pitching Competition • E-Cell IIT Bombay. All rights reserved.</span>
+        <span>© 2026 National Entrepreneurship Challenge (NEC) • E-Cell IIT Bombay. All rights reserved.</span>
         <span className="flex items-center gap-1">
           Built with <Heart className="w-3 h-3 text-rose-500 fill-rose-500" /> for startup founders
         </span>
