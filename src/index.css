@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    background-color: #050814;
+    color: #F8FAFC;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* Impeccable Design System Tokens */
+.glass-panel {
+  background: rgba(11, 17, 32, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-panel-hover:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 12px 35px -10px rgba(245, 158, 11, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Text Gradients */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #FDE047 0%, #F59E0B 50%, #D97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #38BDF8 0%, #06B6D4 50%, #0284C7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glowing Badges */
+.badge-glow-amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.badge-glow-cyan {
+  background: rgba(6, 182, 212, 0.15);
+  color: #38BDF8;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+}
+
+.badge-glow-fire {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050814;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Print Stylesheet for Registration Summary Pass */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  header, footer, button, nav {
+    display: none !important;
+  }
+  .glass-panel {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    box-shadow: none !important;
+  }
+  .text-white, .text-slate-300, .text-slate-400 {
+    color: #000000 !important;
+  }
+  .text-amber-400 {
+    color: #D97706 !important;
+  }
+}
