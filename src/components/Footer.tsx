@@ -57,7 +57,6 @@ export const Footer: React.FC = () => {
             <li>E-Cell IIT Bombay (NEC)</li>
             <li>X//O Labs Entrepreneurship Desk</li>
             <li>Support Email: eureka@ecell.in</li>
-            <li>Organizers Access: e-cell@admin701</li>
           </ul>
         </div>
 
