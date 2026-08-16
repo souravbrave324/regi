@@ -53,19 +53,23 @@ export class FirebaseService {
     }
   }
 
-  static async saveRegistration(teamData: Omit<TeamRegistration, 'id' | 'createdAt' | 'status'>): Promise<TeamRegistration> {
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    const registrationId = `EUREKA-2026-${randomSuffix}`;
-    const createdAtIso = new Date().toISOString();
+  static async saveRegistration(teamData: TeamRegistration): Promise<TeamRegistration> {
+    const registrationId = teamData.id || `NEC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const createdAtIso = teamData.createdAt || new Date().toISOString();
+
+    // Prevent Firestore document size limit error (1MB) if pitchDeckUrl contains a large base64 file data URI
+    let sanitizedPitchDeckUrl = teamData.pitchDeckUrl;
+    if (sanitizedPitchDeckUrl && sanitizedPitchDeckUrl.startsWith('data:') && sanitizedPitchDeckUrl.length > 200000) {
+      sanitizedPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
+    }
 
     const newTeam: TeamRegistration = {
       ...teamData,
       id: registrationId,
       createdAt: createdAtIso,
-      status: 'Pending'
+      pitchDeckUrl: sanitizedPitchDeckUrl,
+      status: teamData.status || 'Pending'
     };
-
-    StorageService.saveTeam(teamData);
 
     try {
       const docRef = doc(db, COLLECTION_NAME, registrationId);
