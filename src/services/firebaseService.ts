@@ -17,7 +17,56 @@ import { FileStorage } from '../utils/fileStorage';
 
 const COLLECTION_NAME = 'registrations';
 
+/**
+ * Safely removes `undefined` fields from JavaScript objects to prevent Firestore setDoc errors.
+ */
+const sanitizeForFirestore = (obj: any): any => {
+  return JSON.parse(JSON.stringify(obj, (_, v) => (v === undefined ? null : v)));
+};
+
 export class FirebaseService {
+  /**
+   * Automatically pushes any registrations stored in local storage to Firestore.
+   * Ensures all teams registered across devices are synced live to Firestore.
+   */
+  static async syncLocalTeamsToFirestore() {
+    try {
+      const localTeams = StorageService.getTeams();
+      for (const team of localTeams) {
+        if (!team.id) continue;
+        try {
+          const docRef = doc(db, COLLECTION_NAME, team.id);
+          const payload = sanitizeForFirestore({
+            ...team,
+            serverTimestamp: Timestamp.now()
+          });
+          await setDoc(docRef, payload, { merge: true });
+
+          // If pitchDeckUrl is base64 data URI, sync file chunks to Firestore subcollection
+          if (team.pitchDeckUrl && team.pitchDeckUrl.startsWith('data:')) {
+            const chunkSize = 400000;
+            const totalLen = team.pitchDeckUrl.length;
+            let chunkIndex = 0;
+            for (let i = 0; i < totalLen; i += chunkSize) {
+              const chunkStr = team.pitchDeckUrl.substring(i, i + chunkSize);
+              const chunkDocRef = doc(db, COLLECTION_NAME, team.id, 'fileChunks', `chunk_${chunkIndex}`);
+              await setDoc(chunkDocRef, sanitizeForFirestore({
+                chunk: chunkStr,
+                index: chunkIndex
+              }), { merge: true });
+              chunkIndex++;
+            }
+          }
+        } catch (e) {
+          console.warn(`Sync warning for team ${team.id}:`, e);
+        }
+      }
+      console.log('✅ Local teams and presentation files synced to Firestore');
+    } catch (err) {
+      console.warn('Local teams sync error:', err);
+    }
+  }
+
   /**
    * Fetches presentation file chunks from Firestore subcollection registrations/{teamId}/fileChunks
    * and re-assembles the complete original base64 file data URI for any device.
@@ -55,6 +104,9 @@ export class FirebaseService {
 
   static subscribeToRegistrations(callback: (teams: TeamRegistration[], isFirebaseLive: boolean) => void) {
     try {
+      // Trigger background sync of any local teams
+      this.syncLocalTeamsToFirestore().catch(() => {});
+
       const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
       
       const unsubscribe = onSnapshot(
@@ -138,18 +190,18 @@ export class FirebaseService {
       if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
       if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
 
-      // Store base64 file data in Firestore subcollection chunks (500KB per chunk)
+      // Store base64 file data in Firestore subcollection chunks (400KB per chunk)
       try {
-        const chunkSize = 500000;
+        const chunkSize = 400000;
         const totalLen = teamData.pitchDeckUrl.length;
         let chunkIndex = 0;
         for (let i = 0; i < totalLen; i += chunkSize) {
           const chunkStr = teamData.pitchDeckUrl.substring(i, i + chunkSize);
           const chunkDocRef = doc(db, COLLECTION_NAME, registrationId, 'fileChunks', `chunk_${chunkIndex}`);
-          await setDoc(chunkDocRef, {
+          await setDoc(chunkDocRef, sanitizeForFirestore({
             chunk: chunkStr,
             index: chunkIndex
-          });
+          }), { merge: true });
           chunkIndex++;
         }
         console.log(`✅ Stored ${chunkIndex} presentation file chunks in Firestore subcollection for ID:`, registrationId);
@@ -212,10 +264,10 @@ export class FirebaseService {
 
     try {
       const docRef = doc(db, COLLECTION_NAME, registrationId);
-      await setDoc(docRef, {
+      await setDoc(docRef, sanitizeForFirestore({
         ...newTeam,
         serverTimestamp: Timestamp.now()
-      });
+      }), { merge: true });
       console.log('✅ Registration saved to Firebase Firestore ID:', registrationId);
     } catch (err) {
       console.error('❌ Firebase Save Error:', err);
@@ -229,10 +281,10 @@ export class FirebaseService {
 
     try {
       const docRef = doc(db, COLLECTION_NAME, id);
-      await updateDoc(docRef, {
+      await updateDoc(docRef, sanitizeForFirestore({
         ...updates,
         updatedAt: Timestamp.now()
-      });
+      }));
       console.log('✅ Team updated in Firestore:', id);
     } catch (err) {
       console.warn('Updated in local storage (Firebase fallback):', err);
@@ -254,13 +306,14 @@ export class FirebaseService {
 
     try {
       const docRef = doc(db, COLLECTION_NAME, id);
-      await updateDoc(docRef, {
+      await updateDoc(docRef, sanitizeForFirestore({
         juryScore: fullScore,
         updatedAt: Timestamp.now()
-      });
+      }));
       console.log('✅ Jury score saved to Firestore:', id);
     } catch (err) {
       console.warn('Saved jury score to local storage (Firebase fallback):', err);
     }
   }
 }
+

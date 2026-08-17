@@ -16,9 +16,13 @@ export function App() {
   const [recentRegistration, setRecentRegistration] = useState<TeamRegistration | null>(null);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
 
-  // Subscribe to real-time Firebase Firestore updates under the hood
+  // Subscribe to real-time Firebase Firestore updates under the hood & sync local teams
   useEffect(() => {
     setIsAdminLoggedIn(StorageService.isAdminLoggedIn());
+
+    FirebaseService.syncLocalTeamsToFirestore().catch((err) => {
+      console.warn('Background Firestore sync warning:', err);
+    });
 
     const unsubscribe = FirebaseService.subscribeToRegistrations((data) => {
       setTeams(data);
