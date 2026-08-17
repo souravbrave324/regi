@@ -32,6 +32,11 @@ export function App() {
   // Handle successful registration submit (persists to local state & background Firestore sync)
   const handleRegistrationSuccess = (newTeam: TeamRegistration) => {
     setRecentRegistration(newTeam);
+    setTeams((prevTeams) => {
+      const exists = prevTeams.some((t) => t.id === newTeam.id || t.startupName.toLowerCase() === newTeam.startupName.toLowerCase());
+      return exists ? prevTeams : [newTeam, ...prevTeams];
+    });
+
     FirebaseService.saveRegistration(newTeam).catch((err) => {
       console.warn('Background Firebase registration sync warning:', err);
     });

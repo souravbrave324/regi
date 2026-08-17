@@ -61,7 +61,15 @@ export class FirebaseService {
               } as TeamRegistration;
             });
 
-            callback(firestoreTeams, true);
+            const localTeams = StorageService.getTeams();
+            const firestoreIds = new Set(firestoreTeams.map(t => t.id));
+            const extraLocal = localTeams.filter(t => !firestoreIds.has(t.id));
+
+            const combinedTeams = [...firestoreTeams, ...extraLocal].sort((a, b) => 
+              new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+            );
+
+            callback(combinedTeams, true);
           } else {
             const localTeams = StorageService.getTeams();
             callback(localTeams, true);
