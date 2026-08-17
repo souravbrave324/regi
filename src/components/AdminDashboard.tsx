@@ -357,7 +357,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             title={`Open ${team.pitchDeckFileName || 'Pitch Deck'}`}
                           >
                             <FileText className="w-3.5 h-3.5 text-amber-400" />
-                            {team.pitchDeckFileName?.endsWith('.pptx') || team.pitchDeckFileName?.endsWith('.ppt') ? 'View PPT' : 'View PDF'}
+                            {(team.pitchDeckFileName || '').toLowerCase().includes('ppt') ? 'View PPT' : 'View PDF'}
                           </button>
                         </td>
 
