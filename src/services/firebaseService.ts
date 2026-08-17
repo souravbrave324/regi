@@ -11,6 +11,7 @@ import {
 import { db } from '../firebase';
 import type { TeamRegistration, JuryScore } from '../types';
 import { StorageService } from './storageService';
+import { FileStorage } from '../utils/fileStorage';
 
 const COLLECTION_NAME = 'registrations';
 
@@ -25,9 +26,20 @@ export class FirebaseService {
           if (!snapshot.empty) {
             const firestoreTeams: TeamRegistration[] = snapshot.docs.map((docSnap) => {
               const data = docSnap.data();
+              const teamId = docSnap.id;
+              let pitchDeckUrl = data.pitchDeckUrl;
+
+              if (!pitchDeckUrl || pitchDeckUrl.startsWith('[')) {
+                const cached = FileStorage.getFileSync(teamId) || FileStorage.getFileSync(data.pitchDeckFileName || '') || FileStorage.getFileSync(data.startupName || '');
+                if (cached) {
+                  pitchDeckUrl = cached;
+                }
+              }
+
               return {
                 ...data,
-                id: docSnap.id,
+                id: teamId,
+                pitchDeckUrl,
                 createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : data.createdAt
               } as TeamRegistration;
             });
@@ -56,6 +68,12 @@ export class FirebaseService {
   static async saveRegistration(teamData: TeamRegistration): Promise<TeamRegistration> {
     const registrationId = teamData.id || `NEC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const createdAtIso = teamData.createdAt || new Date().toISOString();
+
+    if (teamData.pitchDeckUrl && teamData.pitchDeckUrl.startsWith('data:')) {
+      FileStorage.saveFile(registrationId, teamData.pitchDeckUrl);
+      if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
+      if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
+    }
 
     // Prevent Firestore document size limit error (1MB) if pitchDeckUrl contains a large base64 file data URI
     let sanitizedPitchDeckUrl = teamData.pitchDeckUrl;

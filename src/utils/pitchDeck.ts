@@ -1,3 +1,5 @@
+import { FileStorage } from './fileStorage';
+
 /**
  * Safely opens or views a team's pitch deck (PDF, PPT, PPTX, or Web Link).
  * Prevents Chrome's about:blank#blocked security error by avoiding target="_blank"
@@ -13,7 +15,15 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
     return;
   }
 
-  const cleanUrl = url.trim();
+  let cleanUrl = url.trim();
+
+  // If placeholder string, attempt to retrieve cached base64 file data from FileStorage
+  if (cleanUrl.startsWith('[')) {
+    const cached = FileStorage.getFileSync(fileName) || FileStorage.getFileSync(cleanUrl) || await FileStorage.getFile(fileName);
+    if (cached && cached.startsWith('data:')) {
+      cleanUrl = cached;
+    }
+  }
 
   // 1. Base64 Data URI (uploaded presentation or PDF file)
   if (cleanUrl.startsWith('data:')) {
@@ -44,9 +54,9 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
     }
   }
 
-  // 2. Placeholder string (e.g. recorded in database)
+  // 2. Placeholder string fallback if file content not in cache
   if (cleanUrl.startsWith('[')) {
-    alert(`File "${fileName}" is recorded with the team submission.`);
+    alert(`File "${fileName}" was recorded with team registration.`);
     return;
   }
 
@@ -54,7 +64,6 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
   const formattedUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
 
   try {
-    // Attempt to fetch as blob to trigger direct local browser download without tab redirect
     const response = await fetch(formattedUrl);
     if (response.ok) {
       const blob = await response.blob();
@@ -76,7 +85,6 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
   const a = document.createElement('a');
   a.href = formattedUrl;
   a.download = fileName;
-  // CRITICAL: No target="_blank"
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -85,15 +93,23 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
 /**
  * Safely opens or views a team's pitch deck presentation.
  */
-export const openPitchDeck = (url?: string, fileName = 'Pitch_Deck.pdf') => {
+export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf') => {
   if (!url || !url.trim()) {
     alert('No pitch deck link or file was uploaded for this team.');
     return;
   }
 
-  const cleanUrl = url.trim();
+  let cleanUrl = url.trim();
   const lowerFileName = fileName.toLowerCase();
   const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
+
+  // If placeholder string, check FileStorage cache for actual base64 file data
+  if (cleanUrl.startsWith('[')) {
+    const cached = FileStorage.getFileSync(fileName) || FileStorage.getFileSync(cleanUrl) || await FileStorage.getFile(fileName);
+    if (cached && cached.startsWith('data:')) {
+      cleanUrl = cached;
+    }
+  }
 
   // 1. Base64 Data URI
   if (cleanUrl.startsWith('data:')) {
@@ -137,6 +153,7 @@ export const openPitchDeck = (url?: string, fileName = 'Pitch_Deck.pdf') => {
       <!DOCTYPE html>
       <html>
         <head>
+          <meta charset="UTF-8" />
           <title>${fileName} - Pitch Deck Record</title>
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <style>
@@ -173,7 +190,6 @@ export const openPitchDeck = (url?: string, fileName = 'Pitch_Deck.pdf') => {
     if (targetUrl.includes('drive.google.com') || targetUrl.includes('canva.com') || targetUrl.includes('officeapps.live.com')) {
       window.open(targetUrl, '_blank', 'noopener,noreferrer');
     } else {
-      // For standalone PPT / PPTX file URLs, download directly without opening blank tab
       downloadPitchDeck(targetUrl, fileName);
     }
   } else {

@@ -1,4 +1,5 @@
 import type { TeamRegistration, JuryScore } from '../types';
+import { FileStorage } from '../utils/fileStorage';
 
 const STORAGE_KEY = 'eureka_registrations_v1';
 const ADMIN_SESSION_KEY = 'eureka_admin_session_v1';
@@ -109,11 +110,20 @@ export class StorageService {
   static getTeams(): TeamRegistration[] {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
+      let teams: TeamRegistration[] = data ? JSON.parse(data) : INITIAL_SEED_TEAMS;
       if (!data) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SEED_TEAMS));
-        return INITIAL_SEED_TEAMS;
       }
-      return JSON.parse(data);
+
+      return teams.map(t => {
+        if (!t.pitchDeckUrl || t.pitchDeckUrl.startsWith('[')) {
+          const cached = FileStorage.getFileSync(t.id) || FileStorage.getFileSync(t.pitchDeckFileName || '') || FileStorage.getFileSync(t.startupName || '');
+          if (cached) {
+            return { ...t, pitchDeckUrl: cached };
+          }
+        }
+        return t;
+      });
     } catch (e) {
       console.error('LocalStorage read error:', e);
       return INITIAL_SEED_TEAMS;
@@ -123,9 +133,17 @@ export class StorageService {
   static saveTeam(teamData: Omit<TeamRegistration, 'id' | 'createdAt' | 'status'>): TeamRegistration {
     const existing = this.getTeams();
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const newId = `EUREKA-2026-${randomSuffix}`;
+
+    if (teamData.pitchDeckUrl && teamData.pitchDeckUrl.startsWith('data:')) {
+      FileStorage.saveFile(newId, teamData.pitchDeckUrl);
+      if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
+      if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
+    }
+
     const newTeam: TeamRegistration = {
       ...teamData,
-      id: `EUREKA-2026-${randomSuffix}`,
+      id: newId,
       createdAt: new Date().toISOString(),
       status: 'Pending'
     };
