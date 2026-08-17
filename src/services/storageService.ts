@@ -15,7 +15,7 @@ const INITIAL_SEED_TEAMS: TeamRegistration[] = [
     solution: 'AI-powered electroencephalogram (EEG) analysis platform detecting cognitive impairment 3 years before clinical symptoms.',
     businessModel: 'B2B SaaS subscription for diagnostic clinics ($499/mo) and API licensing for hospital networks.',
     teamSize: 3,
-    pitchDeckUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pitchDeckUrl: 'https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf',
     pitchDeckFileName: 'NeuroPulse_Eureka_PitchDeck.pdf',
     demoUrl: 'https://neuropulse.ai',
     members: [
@@ -52,7 +52,7 @@ const INITIAL_SEED_TEAMS: TeamRegistration[] = [
     solution: 'Micro-bubble hydrodynamic cavitation system that degrades micro-pollutants while using 40% less energy.',
     businessModel: 'Equipment sale with annual maintenance contracts and carbon credit profit sharing.',
     teamSize: 4,
-    pitchDeckUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    pitchDeckUrl: 'https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf',
     pitchDeckFileName: 'EcoFlow_PitchDeck_2026.pdf',
     demoUrl: 'https://ecoflow.tech',
     members: [
@@ -90,8 +90,8 @@ const INITIAL_SEED_TEAMS: TeamRegistration[] = [
     solution: 'Zero-knowledge real-time wage streaming protocol powered by layer-2 stablecoin liquidity pools.',
     businessModel: '0.25% transaction fee on automated micro-settlements.',
     teamSize: 2,
-    pitchDeckUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-    pitchDeckFileName: 'PayStream_Deck.pdf',
+    pitchDeckUrl: 'https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf',
+    pitchDeckFileName: 'PayStream_Deck.pptx',
     members: [
       { id: 'm1', name: 'Neha Gupta', email: 'neha@paystream.io', phone: '+91 99887 76655', college: 'DTU Delhi', role: 'Founder & Blockchain Architect', isLeader: true },
       { id: 'm2', name: 'Rohan Joshi', email: 'rohan@paystream.io', phone: '+91 99887 76656', college: 'DTU Delhi', role: 'Smart Contract Dev' }
