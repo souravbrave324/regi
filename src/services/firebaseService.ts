@@ -183,12 +183,41 @@ export class FirebaseService {
     const registrationId = teamData.id || `NEC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const createdAtIso = teamData.createdAt || new Date().toISOString();
 
-    let finalPitchDeckUrl = teamData.pitchDeckUrl;
+    let initialPitchDeckUrl = teamData.pitchDeckUrl;
 
+    // Prevent Firestore document size limit error (1MB) if pitchDeckUrl remains a large base64 file data URI
+    // Lowered limit to 500,000 to be absolutely safe for all UTF-8 characters and overhead
+    if (initialPitchDeckUrl && initialPitchDeckUrl.startsWith('data:') && initialPitchDeckUrl.length > 500000) {
+      initialPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
+    }
+
+    const newTeam: TeamRegistration = {
+      ...teamData,
+      id: registrationId,
+      createdAt: createdAtIso,
+      pitchDeckUrl: initialPitchDeckUrl,
+      status: teamData.status || 'Pending'
+    };
+
+    // 1. Immediately save the main registration document to ensure it's not lost on page refresh
+    try {
+      const docRef = doc(db, COLLECTION_NAME, registrationId);
+      await setDoc(docRef, sanitizeForFirestore({
+        ...newTeam,
+        serverTimestamp: Timestamp.now()
+      }), { merge: true });
+      console.log('✅ Registration immediately saved to Firebase Firestore ID:', registrationId);
+    } catch (err) {
+      console.error('❌ Firebase Save Error:', err);
+    }
+
+    // 2. Perform slow file chunking and cloud storage uploads asynchronously
     if (teamData.pitchDeckUrl && teamData.pitchDeckUrl.startsWith('data:')) {
       FileStorage.saveFile(registrationId, teamData.pitchDeckUrl);
       if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
       if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
+
+      let finalPitchDeckUrl = initialPitchDeckUrl;
 
       // Store base64 file data in Firestore subcollection chunks (400KB per chunk)
       try {
@@ -247,30 +276,16 @@ export class FirebaseService {
       } catch (storageErr) {
         console.warn('⚠️ Firebase Storage upload warning:', storageErr);
       }
-    }
 
-    // Prevent Firestore document size limit error (1MB) if pitchDeckUrl remains a large base64 file data URI
-    if (finalPitchDeckUrl && finalPitchDeckUrl.startsWith('data:') && finalPitchDeckUrl.length > 800000) {
-      finalPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
-    }
-
-    const newTeam: TeamRegistration = {
-      ...teamData,
-      id: registrationId,
-      createdAt: createdAtIso,
-      pitchDeckUrl: finalPitchDeckUrl,
-      status: teamData.status || 'Pending'
-    };
-
-    try {
-      const docRef = doc(db, COLLECTION_NAME, registrationId);
-      await setDoc(docRef, sanitizeForFirestore({
-        ...newTeam,
-        serverTimestamp: Timestamp.now()
-      }), { merge: true });
-      console.log('✅ Registration saved to Firebase Firestore ID:', registrationId);
-    } catch (err) {
-      console.error('❌ Firebase Save Error:', err);
+      // If we got a real cloud URL (not a placeholder), update the main document with the fast URL
+      if (finalPitchDeckUrl !== initialPitchDeckUrl) {
+        try {
+          const docRef = doc(db, COLLECTION_NAME, registrationId);
+          await setDoc(docRef, sanitizeForFirestore({ pitchDeckUrl: finalPitchDeckUrl }), { merge: true });
+        } catch (updateErr) {
+          console.warn('⚠️ Failed to update main document with Cloud URL:', updateErr);
+        }
+      }
     }
 
     return newTeam;

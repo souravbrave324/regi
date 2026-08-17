@@ -512,11 +512,16 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
   // 3. Web URLs (HTTP / HTTPS cloud URLs such as Firebase Storage, Google Drive, Canva, etc.)
   let targetUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
 
+  const isExternalViewer = targetUrl.includes('drive.google.com') || targetUrl.includes('canva.com') || targetUrl.includes('docs.google.com') || targetUrl.includes('officeapps.live.com');
+
+  if (isExternalViewer) {
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
   if (isPPT) {
-    if (targetUrl.includes('firebasestorage.googleapis.com') || targetUrl.includes('drive.google.com') || targetUrl.includes('canva.com') || targetUrl.includes('officeapps.live.com')) {
-      const viewerUrl = targetUrl.includes('firebasestorage.googleapis.com') 
-        ? `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(targetUrl)}`
-        : targetUrl;
+    if (targetUrl.includes('firebasestorage.googleapis.com')) {
+      const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(targetUrl)}`;
       window.open(viewerUrl, '_blank', 'noopener,noreferrer');
     } else {
       downloadPitchDeck(targetUrl, cleanName);

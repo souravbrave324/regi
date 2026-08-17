@@ -295,6 +295,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <th className="py-3.5 px-4">Domain</th>
                   <th className="py-3.5 px-4">Primary Contact / Leader</th>
                   <th className="py-3.5 px-4">Team Size</th>
+                  <th className="py-3.5 px-4">Eureka ID</th>
                   <th className="py-3.5 px-4">Pitch Deck</th>
                   <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
@@ -357,7 +358,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             title={`Open ${team.pitchDeckFileName || 'Pitch Deck'}`}
                           >
                             <FileText className="w-3.5 h-3.5 text-amber-400" />
-                            {team.pitchDeckFileName?.endsWith('.pptx') || team.pitchDeckFileName?.endsWith('.ppt') ? 'View PPT' : 'View PDF'}
+                            {team.pitchDeckUrl?.includes('drive.google.com') || team.pitchDeckUrl?.includes('canva.com') || team.pitchDeckUrl?.includes('docs.google.com') 
+                              ? 'View Link' 
+                              : (team.pitchDeckFileName?.toLowerCase().endsWith('.pptx') || team.pitchDeckFileName?.toLowerCase().endsWith('.ppt') 
+                                ? 'View PPT' 
+                                : 'View PDF')}
                           </button>
                         </td>
 
