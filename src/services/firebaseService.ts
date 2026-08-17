@@ -8,7 +8,7 @@ import {
   orderBy, 
   Timestamp 
 } from 'firebase/firestore';
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, uploadString, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import type { TeamRegistration, JuryScore } from '../types';
 import { StorageService } from './storageService';
@@ -104,14 +104,38 @@ export class FirebaseService {
 
       // Upload file to Firebase Cloud Storage so admins on deployed production can view the exact uploaded file
       try {
+        const parts = teamData.pitchDeckUrl.split(',');
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        const isPPT = (teamData.pitchDeckFileName || '').toLowerCase().endsWith('.pptx') || (teamData.pitchDeckFileName || '').toLowerCase().endsWith('.ppt');
+        const mimeType = mimeMatch ? mimeMatch[1] : (isPPT ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'application/pdf');
+        
+        const base64Data = parts[1];
+        const binaryString = atob(base64Data);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: mimeType });
+
         const timestamp = Date.now();
         const cleanName = (teamData.pitchDeckFileName || 'Pitch_Deck.pdf').replace(/[^a-zA-Z0-9._-]/g, '_');
         const storageRef = ref(storage, `pitch_decks/${timestamp}_${cleanName}`);
-        await uploadString(storageRef, teamData.pitchDeckUrl, 'data_url');
-        const cloudUrl = await getDownloadURL(storageRef);
-        if (cloudUrl) {
-          finalPitchDeckUrl = cloudUrl;
-          console.log('✅ Pitch deck uploaded to Firebase Cloud Storage:', cloudUrl);
+        
+        try {
+          const uploadResult = await uploadBytes(storageRef, blob, { contentType: mimeType });
+          const cloudUrl = await getDownloadURL(uploadResult.ref);
+          if (cloudUrl) {
+            finalPitchDeckUrl = cloudUrl;
+            console.log('✅ Pitch deck uploaded to Firebase Cloud Storage via uploadBytes:', cloudUrl);
+          }
+        } catch (bytesErr) {
+          await uploadString(storageRef, teamData.pitchDeckUrl, 'data_url');
+          const cloudUrl = await getDownloadURL(storageRef);
+          if (cloudUrl) {
+            finalPitchDeckUrl = cloudUrl;
+            console.log('✅ Pitch deck uploaded to Firebase Cloud Storage via uploadString:', cloudUrl);
+          }
         }
       } catch (storageErr) {
         console.warn('⚠️ Firebase Storage upload warning:', storageErr);

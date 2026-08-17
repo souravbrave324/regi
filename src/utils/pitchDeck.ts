@@ -520,9 +520,16 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf') =
   const lowerFileName = cleanName.toLowerCase();
   const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
 
-  // If placeholder string, check FileStorage cache for actual base64 file data
+  // If placeholder string, extract exact file name inside "[File Uploaded: ...]" and query FileStorage cache
   if (cleanUrl.startsWith('[')) {
-    const cached = FileStorage.getFileSync(cleanName) || FileStorage.getFileSync(cleanUrl) || await FileStorage.getFile(cleanName);
+    const match = cleanUrl.match(/\[File Uploaded:\s*(.*?)\]/i);
+    const extractedName = match ? match[1].trim() : cleanName;
+
+    const cached = await FileStorage.getFile(extractedName) || 
+                   await FileStorage.getFile(cleanName) || 
+                   await FileStorage.getFile(cleanUrl) || 
+                   FileStorage.getFileSync(extractedName) || 
+                   FileStorage.getFileSync(cleanName);
     if (cached && cached.startsWith('data:')) {
       cleanUrl = cached;
     }
