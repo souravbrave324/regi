@@ -635,8 +635,27 @@ const openPresentationWindow = (
         }
 
         const zip = await JSZip.loadAsync(arrayBuffer);
-        const slideFiles = [];
 
+        // 1. Extract embedded images & graphics from ppt/media/
+        const slideImages = [];
+        const mediaFolder = zip.folder('ppt/media');
+        if (mediaFolder) {
+          const promises = [];
+          mediaFolder.forEach((relPath, file) => {
+            promises.push((async () => {
+              try {
+                const b64 = await file.async('base64');
+                const ext = relPath.split('.').pop() || 'png';
+                const mime = (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : (ext === 'svg' ? 'image/svg+xml' : 'image/png');
+                slideImages.push('data:' + mime + ';base64,' + b64);
+              } catch (e) {}
+            })());
+          });
+          await Promise.all(promises);
+        }
+
+        // 2. Parse slide XML files from ppt/slides/slide*.xml
+        const slideFiles = [];
         zip.folder('ppt/slides').forEach((relativePath, file) => {
           if (relativePath.match(/^slide\d+\.xml$/i)) {
             const slideNum = parseInt(relativePath.match(/\d+/)[0], 10);
@@ -652,7 +671,8 @@ const openPresentationWindow = (
 
         if (spinner) spinner.style.display = 'none';
 
-        for (const item of slideFiles) {
+        for (let idx = 0; idx < slideFiles.length; idx++) {
+          const item = slideFiles[idx];
           const xmlText = await item.file.async('text');
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
@@ -666,15 +686,17 @@ const openPresentationWindow = (
 
           const slideTitle = textArray[0] || ('Slide ' + item.num);
           const slideBody = textArray.slice(1);
+          const assocImage = slideImages[idx] || (slideImages.length === 1 ? slideImages[0] : null);
 
           const slideCard = document.createElement('div');
           slideCard.className = 'ppt-slide-card';
           slideCard.innerHTML = \`
             <div class="slide-header">
               <span class="slide-num">Slide \${item.num} of \${slideFiles.length}</span>
-              <span class="slide-badge">PowerPoint Slide</span>
+              <span class="slide-badge">📊 PowerPoint Slide</span>
             </div>
             <h2 class="slide-title">\${escapeHtml(slideTitle)}</h2>
+            \${assocImage ? \`<img src="\${assocImage}" alt="Slide Visual" style="width:100%;max-height:420px;object-fit:contain;border-radius:12px;border:1px solid #1e293b;margin:12px 0;background:#050814;" />\` : ''}
             <div class="slide-body">
               \${slideBody.length > 0 ? slideBody.map(t => \`<p class="slide-text">\${escapeHtml(t)}</p>\`).join('') : '<p class="slide-empty">Presentation Slide Content</p>'}
             </div>
