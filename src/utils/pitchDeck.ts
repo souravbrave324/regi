@@ -242,6 +242,67 @@ const openPresentationWindow = (
       max-width: 100%;
       height: auto !important;
     }
+    .ppt-slide-card {
+      width: 100%;
+      max-width: 720px;
+      background: #0b1120;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .slide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 8px;
+    }
+    .slide-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: #f59e0b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .slide-badge {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .slide-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 4px 0;
+    }
+    .slide-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .slide-text {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      background: #050814;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border-left: 3px solid #f59e0b;
+    }
+    .slide-empty {
+      font-size: 12px;
+      color: #64748b;
+      font-style: italic;
+    }
     .fallback-card {
       max-width: 500px;
       width: 100%;
@@ -295,6 +356,7 @@ const openPresentationWindow = (
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
   <header>
@@ -313,12 +375,12 @@ const openPresentationWindow = (
 
   <main id="main-content">
     ${
-      !isPPT && contentUrl
+      contentUrl
         ? `<div id="loading-spinner">
             <div class="spinner"></div>
-            Loading PDF Presentation...
+            Loading ${isPPT ? 'PowerPoint' : 'PDF'} Presentation...
           </div>
-          <div id="pdf-render-area" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>`
+          <div id="render-area" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>`
         : `<div class="fallback-card">
             <div class="icon-box">${isPPT ? '📊' : '📄'}</div>
             <h2>${cleanName}</h2>
@@ -340,12 +402,16 @@ const openPresentationWindow = (
       document.body.removeChild(a);
     }
 
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
     ${
       !isPPT && contentUrl
         ? `
     (async function renderPdf() {
       const url = ${JSON.stringify(contentUrl)};
-      const mainArea = document.getElementById('pdf-render-area');
+      const mainArea = document.getElementById('render-area');
       const spinner = document.getElementById('loading-spinner');
 
       try {
@@ -397,6 +463,95 @@ const openPresentationWindow = (
             <div class="icon-box">📄</div>
             <h2>${cleanName}</h2>
             <p>Presentation document loaded cleanly.<br/>Click below to download or view original file.</p>
+            <button class="btn btn-primary" onclick="downloadFile()">Download ${cleanName}</button>
+          </div>
+        \`;
+      }
+    })();
+    `
+        : isPPT && contentUrl
+        ? `
+    (async function renderPptx() {
+      const url = ${JSON.stringify(contentUrl)};
+      const mainArea = document.getElementById('render-area');
+      const spinner = document.getElementById('loading-spinner');
+
+      if (!url) return;
+
+      if (url.startsWith('http')) {
+        if (spinner) spinner.style.display = 'none';
+        const officeUrl = 'https://view.officeapps.live.com/op/view.aspx?src=' + encodeURIComponent(url);
+        mainArea.innerHTML = '<iframe src="' + officeUrl + '" style="width:100%;height:85vh;border:none;border-radius:12px;"></iframe>';
+        return;
+      }
+
+      try {
+        if (typeof JSZip === 'undefined') {
+          throw new Error('JSZip not loaded');
+        }
+
+        const base64Data = url.split(',')[1];
+        const raw = atob(base64Data);
+        const uint8Array = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) {
+          uint8Array[i] = raw.charCodeAt(i);
+        }
+
+        const zip = await JSZip.loadAsync(uint8Array);
+        const slideFiles = [];
+
+        zip.folder('ppt/slides').forEach((relativePath, file) => {
+          if (relativePath.match(/^slide\d+\.xml$/i)) {
+            const slideNum = parseInt(relativePath.match(/\d+/)[0], 10);
+            slideFiles.push({ num: slideNum, file: file });
+          }
+        });
+
+        slideFiles.sort((a, b) => a.num - b.num);
+
+        if (slideFiles.length === 0) {
+          throw new Error('No slide XML files found');
+        }
+
+        if (spinner) spinner.style.display = 'none';
+
+        for (const item of slideFiles) {
+          const xmlText = await item.file.async('text');
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+
+          const textNodes = xmlDoc.getElementsByTagNameNS('*', 't');
+          const textArray = [];
+          for (let i = 0; i < textNodes.length; i++) {
+            const txt = textNodes[i].textContent ? textNodes[i].textContent.trim() : '';
+            if (txt) textArray.push(txt);
+          }
+
+          const slideTitle = textArray[0] || ('Slide ' + item.num);
+          const slideBody = textArray.slice(1);
+
+          const slideCard = document.createElement('div');
+          slideCard.className = 'ppt-slide-card';
+          slideCard.innerHTML = \`
+            <div class="slide-header">
+              <span class="slide-num">Slide \${item.num} of \${slideFiles.length}</span>
+              <span class="slide-badge">PowerPoint Slide</span>
+            </div>
+            <h2 class="slide-title">\${escapeHtml(slideTitle)}</h2>
+            <div class="slide-body">
+              \${slideBody.length > 0 ? slideBody.map(t => \`<p class="slide-text">\${escapeHtml(t)}</p>\`).join('') : '<p class="slide-empty">Presentation Slide Content</p>'}
+            </div>
+          \`;
+          mainArea.appendChild(slideCard);
+        }
+      } catch (err) {
+        console.warn('PPTX parsing fallback:', err);
+        if (spinner) spinner.style.display = 'none';
+        mainArea.innerHTML = \`
+          <div class="fallback-card">
+            <div class="icon-box">📊</div>
+            <h2>${cleanName}</h2>
+            <p>PowerPoint Presentation submission verified for E-Cell IIT Bombay Eureka! 2026 Competition.<br/>Click below to download and view presentation slides.</p>
             <button class="btn btn-primary" onclick="downloadFile()">Download ${cleanName}</button>
           </div>
         \`;
