@@ -541,12 +541,10 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
         window.open(viewerUrl, '_blank', 'noopener,noreferrer');
       }
     } else {
-      if (win) win.close();
-      openPresentationWindow(cleanName, targetUrl, true);
+      openPresentationWindow(cleanName, targetUrl, true, win);
     }
   } else {
-    if (win) win.close();
-    openPresentationWindow(cleanName, targetUrl, false);
+    openPresentationWindow(cleanName, targetUrl, false, win);
   }
 };
 
