@@ -573,7 +573,7 @@ const openPresentationWindow = (
 
       if (!url) return;
 
-      if (url.startsWith('http')) {
+      if (url.startsWith('http://') || url.startsWith('https://')) {
         if (spinner) spinner.style.display = 'none';
         const officeUrl = 'https://view.officeapps.live.com/op/view.aspx?src=' + encodeURIComponent(url);
         mainArea.innerHTML = '<iframe src="' + officeUrl + '" style="width:100%;height:85vh;border:none;border-radius:12px;"></iframe>';
@@ -585,14 +585,21 @@ const openPresentationWindow = (
           throw new Error('JSZip not loaded');
         }
 
-        const base64Data = url.split(',')[1];
-        const raw = atob(base64Data);
-        const uint8Array = new Uint8Array(raw.length);
-        for (let i = 0; i < raw.length; i++) {
-          uint8Array[i] = raw.charCodeAt(i);
+        let arrayBuffer;
+        if (url.startsWith('data:')) {
+          const base64Data = url.split(',')[1];
+          const raw = atob(base64Data);
+          const uint8Array = new Uint8Array(raw.length);
+          for (let i = 0; i < raw.length; i++) {
+            uint8Array[i] = raw.charCodeAt(i);
+          }
+          arrayBuffer = uint8Array.buffer;
+        } else {
+          const res = await fetch(url);
+          arrayBuffer = await res.arrayBuffer();
         }
 
-        const zip = await JSZip.loadAsync(uint8Array);
+        const zip = await JSZip.loadAsync(arrayBuffer);
         const slideFiles = [];
 
         zip.folder('ppt/slides').forEach((relativePath, file) => {
