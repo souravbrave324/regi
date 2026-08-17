@@ -8,7 +8,8 @@ import {
   orderBy, 
   Timestamp 
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../firebase';
 import type { TeamRegistration, JuryScore } from '../types';
 import { StorageService } from './storageService';
 import { FileStorage } from '../utils/fileStorage';
@@ -86,23 +87,39 @@ export class FirebaseService {
     const registrationId = teamData.id || `NEC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const createdAtIso = teamData.createdAt || new Date().toISOString();
 
+    let finalPitchDeckUrl = teamData.pitchDeckUrl;
+
     if (teamData.pitchDeckUrl && teamData.pitchDeckUrl.startsWith('data:')) {
       FileStorage.saveFile(registrationId, teamData.pitchDeckUrl);
       if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
       if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
+
+      // Upload file to Firebase Cloud Storage so admins on deployed production can view the exact uploaded file
+      try {
+        const timestamp = Date.now();
+        const cleanName = (teamData.pitchDeckFileName || 'Pitch_Deck.pdf').replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storageRef = ref(storage, `pitch_decks/${timestamp}_${cleanName}`);
+        await uploadString(storageRef, teamData.pitchDeckUrl, 'data_url');
+        const cloudUrl = await getDownloadURL(storageRef);
+        if (cloudUrl) {
+          finalPitchDeckUrl = cloudUrl;
+          console.log('✅ Pitch deck uploaded to Firebase Cloud Storage:', cloudUrl);
+        }
+      } catch (storageErr) {
+        console.warn('⚠️ Firebase Storage upload warning:', storageErr);
+      }
     }
 
-    // Prevent Firestore document size limit error (1MB) if pitchDeckUrl contains a large base64 file data URI
-    let sanitizedPitchDeckUrl = teamData.pitchDeckUrl;
-    if (sanitizedPitchDeckUrl && sanitizedPitchDeckUrl.startsWith('data:') && sanitizedPitchDeckUrl.length > 200000) {
-      sanitizedPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
+    // Prevent Firestore document size limit error (1MB) if pitchDeckUrl remains a large base64 file data URI
+    if (finalPitchDeckUrl && finalPitchDeckUrl.startsWith('data:') && finalPitchDeckUrl.length > 200000) {
+      finalPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
     }
 
     const newTeam: TeamRegistration = {
       ...teamData,
       id: registrationId,
       createdAt: createdAtIso,
-      pitchDeckUrl: sanitizedPitchDeckUrl,
+      pitchDeckUrl: finalPitchDeckUrl,
       status: teamData.status || 'Pending'
     };
 
