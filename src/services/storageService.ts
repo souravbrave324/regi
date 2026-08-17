@@ -137,13 +137,10 @@ export class StorageService {
 
     const fullPitchDeckUrl = teamData.pitchDeckUrl;
 
-    // Store large base64 presentation data in FileStorage (IndexedDB + in-memory cache)
+    // Store large base64 presentation data in IndexedDB (FileStorage) where there is no 5MB quota limit
     if (fullPitchDeckUrl && fullPitchDeckUrl.startsWith('data:')) {
       FileStorage.saveFile(newId, fullPitchDeckUrl);
-      if (teamData.pitchDeckFileName) {
-        FileStorage.saveFile(teamData.pitchDeckFileName, fullPitchDeckUrl);
-        FileStorage.saveFile(`[File Uploaded: ${teamData.pitchDeckFileName}]`, fullPitchDeckUrl);
-      }
+      if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, fullPitchDeckUrl);
       if (teamData.startupName) FileStorage.saveFile(teamData.startupName, fullPitchDeckUrl);
     }
 
