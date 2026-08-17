@@ -352,7 +352,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <td className="py-4 px-4">
                           <button
                             type="button"
-                            onClick={() => openPitchDeck(team.pitchDeckUrl, team.pitchDeckFileName)}
+                            onClick={() => openPitchDeck(team.pitchDeckUrl, team.pitchDeckFileName, team.id)}
                             className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
                             title={`Open ${team.pitchDeckFileName || 'Pitch Deck'}`}
                           >
@@ -465,7 +465,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           type="button"
                           onClick={() => {
                             const team = teams.find(t => t.id === item.teamId);
-                            if (team) openPitchDeck(team.pitchDeckUrl, team.pitchDeckFileName);
+                            if (team) openPitchDeck(team.pitchDeckUrl, team.pitchDeckFileName, team.id);
                           }}
                           className="px-2.5 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[11px] font-bold flex items-center gap-1 cursor-pointer"
                         >
@@ -585,7 +585,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div className="flex items-center justify-between pt-4 border-t border-slate-800">
               <button
                 type="button"
-                onClick={() => openPitchDeck(selectedTeam.pitchDeckUrl, selectedTeam.pitchDeckFileName)}
+                onClick={() => openPitchDeck(selectedTeam.pitchDeckUrl, selectedTeam.pitchDeckFileName, selectedTeam.id)}
                 className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-amber-500/20"
               >
                 <FileText className="w-4 h-4" /> Open / View Pitch Deck (PDF / PPT)

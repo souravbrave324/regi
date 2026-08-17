@@ -1,4 +1,5 @@
 import { FileStorage } from './fileStorage';
+import { FirebaseService } from '../services/firebaseService';
 
 /**
  * Escapes characters for PDF text literal syntax `(...)`.
@@ -509,7 +510,7 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
 /**
  * Safely opens or views a team's pitch deck presentation (PDF or PPT).
  */
-export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf') => {
+export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', teamId?: string) => {
   if (!url || !url.trim()) {
     alert('No pitch deck link or file was uploaded for this team.');
     return;
@@ -520,16 +521,23 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf') =
   const lowerFileName = cleanName.toLowerCase();
   const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
 
-  // If placeholder string, extract exact file name inside "[File Uploaded: ...]" and query FileStorage cache
-  if (cleanUrl.startsWith('[')) {
+  // If placeholder string or non-data URL, attempt resolving full base64 file data from Firestore chunks or local IndexedDB
+  if (cleanUrl.startsWith('[') || !cleanUrl.startsWith('data:')) {
     const match = cleanUrl.match(/\[File Uploaded:\s*(.*?)\]/i);
     const extractedName = match ? match[1].trim() : cleanName;
 
-    const cached = await FileStorage.getFile(extractedName) || 
-                   await FileStorage.getFile(cleanName) || 
-                   await FileStorage.getFile(cleanUrl) || 
-                   FileStorage.getFileSync(extractedName) || 
-                   FileStorage.getFileSync(cleanName);
+    // 1. Try local IndexedDB / LocalStorage cache
+    let cached = await FileStorage.getFile(extractedName) || 
+                 await FileStorage.getFile(cleanName) || 
+                 (teamId ? await FileStorage.getFile(teamId) : null) ||
+                 FileStorage.getFileSync(extractedName) || 
+                 FileStorage.getFileSync(cleanName);
+
+    // 2. If not in local cache (e.g. accessed from secondary device), fetch chunks from Firestore
+    if ((!cached || !cached.startsWith('data:')) && teamId) {
+      cached = await FirebaseService.fetchPitchDeckFile(teamId, cleanName);
+    }
+
     if (cached && cached.startsWith('data:')) {
       cleanUrl = cached;
     }

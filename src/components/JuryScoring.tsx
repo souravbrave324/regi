@@ -155,7 +155,7 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
                 <span className="text-slate-300 font-medium">Presentation Deck:</span>
                 <button
                   type="button"
-                  onClick={() => openPitchDeck(currentTeam.pitchDeckUrl, currentTeam.pitchDeckFileName)}
+                  onClick={() => openPitchDeck(currentTeam.pitchDeckUrl, currentTeam.pitchDeckFileName, currentTeam.id)}
                   className="text-amber-400 hover:underline font-bold flex items-center gap-1 cursor-pointer"
                 >
                   <FileText className="w-4 h-4" /> Open Pitch Deck

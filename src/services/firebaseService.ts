@@ -3,6 +3,7 @@ import {
   doc, 
   setDoc, 
   updateDoc, 
+  getDocs,
   onSnapshot, 
   query, 
   orderBy, 
@@ -17,6 +18,41 @@ import { FileStorage } from '../utils/fileStorage';
 const COLLECTION_NAME = 'registrations';
 
 export class FirebaseService {
+  /**
+   * Fetches presentation file chunks from Firestore subcollection registrations/{teamId}/fileChunks
+   * and re-assembles the complete original base64 file data URI for any device.
+   */
+  static async fetchPitchDeckFile(teamId: string, fileName?: string): Promise<string | null> {
+    if (!teamId) return null;
+
+    // 1. Check local IndexedDB / LocalStorage first for instant performance
+    const localCached = await FileStorage.getFile(teamId) || 
+                        (fileName ? await FileStorage.getFile(fileName) : null);
+    if (localCached && localCached.startsWith('data:')) {
+      return localCached;
+    }
+
+    // 2. Query Firestore subcollection registrations/{teamId}/fileChunks
+    try {
+      const chunksRef = collection(db, COLLECTION_NAME, teamId, 'fileChunks');
+      const snapshot = await getDocs(chunksRef);
+      if (!snapshot.empty) {
+        const chunkDocs = snapshot.docs.map(d => d.data());
+        chunkDocs.sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+        const fullBase64 = chunkDocs.map(d => d.chunk || '').join('');
+        if (fullBase64 && fullBase64.startsWith('data:')) {
+          FileStorage.saveFile(teamId, fullBase64);
+          if (fileName) FileStorage.saveFile(fileName, fullBase64);
+          return fullBase64;
+        }
+      }
+    } catch (err) {
+      console.warn('Error fetching presentation file chunks from Firestore:', err);
+    }
+
+    return null;
+  }
+
   static subscribeToRegistrations(callback: (teams: TeamRegistration[], isFirebaseLive: boolean) => void) {
     try {
       const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
@@ -102,7 +138,26 @@ export class FirebaseService {
       if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
       if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
 
-      // Upload file to Firebase Cloud Storage so admins on deployed production can view the exact uploaded file
+      // Store base64 file data in Firestore subcollection chunks (500KB per chunk)
+      try {
+        const chunkSize = 500000;
+        const totalLen = teamData.pitchDeckUrl.length;
+        let chunkIndex = 0;
+        for (let i = 0; i < totalLen; i += chunkSize) {
+          const chunkStr = teamData.pitchDeckUrl.substring(i, i + chunkSize);
+          const chunkDocRef = doc(db, COLLECTION_NAME, registrationId, 'fileChunks', `chunk_${chunkIndex}`);
+          await setDoc(chunkDocRef, {
+            chunk: chunkStr,
+            index: chunkIndex
+          });
+          chunkIndex++;
+        }
+        console.log(`✅ Stored ${chunkIndex} presentation file chunks in Firestore subcollection for ID:`, registrationId);
+      } catch (chunkErr) {
+        console.warn('⚠️ Firestore file chunk upload warning:', chunkErr);
+      }
+
+      // Upload file blob to Firebase Cloud Storage so admins on deployed production can view the exact uploaded file
       try {
         const parts = teamData.pitchDeckUrl.split(',');
         const mimeMatch = parts[0].match(/:(.*?);/);
