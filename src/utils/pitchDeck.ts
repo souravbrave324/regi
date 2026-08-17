@@ -580,10 +580,14 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
 
   let cleanUrl = url.trim();
   const cleanName = fileName.trim() || 'Pitch_Deck.pptx';
+  const lowerFileName = cleanName.toLowerCase();
+  const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
 
   // 1. If placeholder string, attempt to retrieve cached base64 file data from FileStorage
   if (cleanUrl.startsWith('[')) {
-    const cached = FileStorage.getFileSync(cleanName) || FileStorage.getFileSync(cleanUrl) || await FileStorage.getFile(cleanName);
+    const cached = FileStorage.getFileSync(cleanName) || 
+                   FileStorage.getFileSync(cleanUrl) || 
+                   await FileStorage.getFile(cleanName);
     if (cached && cached.startsWith('data:')) {
       cleanUrl = cached;
     }
@@ -594,7 +598,6 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
     try {
       const parts = cleanUrl.split(',');
       const mimeMatch = parts[0].match(/:(.*?);/);
-      const isPPT = cleanName.toLowerCase().endsWith('.pptx') || cleanName.toLowerCase().endsWith('.ppt');
       const mimeType = mimeMatch ? mimeMatch[1] : (isPPT ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'application/pdf');
       const base64Data = parts[1];
       const binaryString = atob(base64Data);
@@ -618,13 +621,14 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
     }
   }
 
-  // 3. Placeholder string fallback: generate and download actual file Blob
+  // 3. Placeholder string fallback: download synthetic record PDF to avoid corrupting PowerPoint (.pptx) file extensions
   if (cleanUrl.startsWith('[')) {
-    const blob = createPresentationBlob(cleanName);
+    const downloadName = isPPT ? cleanName.replace(/\.pptx?$/i, '_Record.pdf') : cleanName;
+    const blob = createPresentationBlob(downloadName);
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
-    a.download = cleanName;
+    a.download = downloadName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -716,16 +720,11 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
       const blob = new Blob([bytes], { type: mimeType });
       const blobUrl = URL.createObjectURL(blob);
 
-      if (isPPT || mimeType.includes('presentation') || mimeType.includes('powerpoint')) {
-        downloadPitchDeck(cleanUrl, cleanName);
-        openPresentationWindow(cleanName, blobUrl, true);
-      } else {
-        openPresentationWindow(cleanName, blobUrl, false);
-      }
+      openPresentationWindow(cleanName, blobUrl, isPPT);
       return;
     } catch (e) {
       console.error('Error opening base64 pitch deck:', e);
-      downloadPitchDeck(cleanUrl, cleanName);
+      openPresentationWindow(cleanName, cleanUrl, isPPT);
       return;
     }
   }
@@ -734,12 +733,7 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
   if (cleanUrl.startsWith('[')) {
     const blob = createPresentationBlob(cleanName);
     const blobUrl = URL.createObjectURL(blob);
-    if (isPPT) {
-      downloadPitchDeck(cleanUrl, cleanName);
-      openPresentationWindow(cleanName, blobUrl, true);
-    } else {
-      openPresentationWindow(cleanName, blobUrl, false);
-    }
+    openPresentationWindow(cleanName, blobUrl, isPPT);
     return;
   }
 
@@ -753,7 +747,6 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
         : targetUrl;
       window.open(viewerUrl, '_blank', 'noopener,noreferrer');
     } else {
-      downloadPitchDeck(targetUrl, cleanName);
       openPresentationWindow(cleanName, targetUrl, true);
     }
   } else {
