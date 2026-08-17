@@ -135,22 +135,45 @@ export class StorageService {
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const newId = `EUREKA-2026-${randomSuffix}`;
 
-    if (teamData.pitchDeckUrl && teamData.pitchDeckUrl.startsWith('data:')) {
-      FileStorage.saveFile(newId, teamData.pitchDeckUrl);
-      if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
-      if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
+    const fullPitchDeckUrl = teamData.pitchDeckUrl;
+
+    // Store large base64 presentation data in IndexedDB (FileStorage) where there is no 5MB quota limit
+    if (fullPitchDeckUrl && fullPitchDeckUrl.startsWith('data:')) {
+      FileStorage.saveFile(newId, fullPitchDeckUrl);
+      if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, fullPitchDeckUrl);
+      if (teamData.startupName) FileStorage.saveFile(teamData.startupName, fullPitchDeckUrl);
     }
 
-    const newTeam: TeamRegistration = {
+    // Sanitize pitchDeckUrl for LocalStorage to prevent Exceeded Quota Error (5MB browser limit)
+    let sanitizedPitchDeckUrl = fullPitchDeckUrl;
+    if (sanitizedPitchDeckUrl && sanitizedPitchDeckUrl.startsWith('data:') && sanitizedPitchDeckUrl.length > 50000) {
+      sanitizedPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
+    }
+
+    const teamToSaveLocal: TeamRegistration = {
       ...teamData,
       id: newId,
+      pitchDeckUrl: sanitizedPitchDeckUrl,
       createdAt: new Date().toISOString(),
       status: 'Pending'
     };
 
-    const updated = [newTeam, ...existing];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    return newTeam;
+    const teamToReturn: TeamRegistration = {
+      ...teamData,
+      id: newId,
+      pitchDeckUrl: fullPitchDeckUrl,
+      createdAt: teamToSaveLocal.createdAt,
+      status: 'Pending'
+    };
+
+    try {
+      const updated = [teamToSaveLocal, ...existing];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.warn('LocalStorage quota warning (handled safely):', e);
+    }
+
+    return teamToReturn;
   }
 
   static checkDuplicate(startupName: string, leaderEmail: string, eurekaTeamId: string): { isDuplicate: boolean; reason?: string } {
