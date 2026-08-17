@@ -279,175 +279,38 @@ const openPresentationWindow = (
       max-width: 260px;
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .file-info p {
-      font-size: 10px;
-      color: #94a3b8;
-    }
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn {
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: none;
-      border: none;
-      transition: all 0.2s;
-    }
-    .btn-primary {
-      background: #f59e0b;
-      color: #000000;
-    }
-    .btn-primary:hover {
-      background: #fbbf24;
-    }
-    .btn-secondary {
-      background: #1e293b;
-      color: #cbd5e1;
-    }
-    .btn-secondary:hover {
-      background: #334155;
-      color: #ffffff;
-    }
-    main {
-      flex: 1;
-      background: #030712;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
-      overflow-y: auto;
-    }
-    .canvas-wrapper {
-      margin-bottom: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
-      border-radius: 8px;
-      overflow: hidden;
-      background: #ffffff;
-      max-width: 100%;
-    }
-    canvas {
-      display: block;
-      max-width: 100%;
-      height: auto !important;
-    }
-    .ppt-slide-card {
-      width: 100%;
-      max-width: 720px;
-      background: #0b1120;
-      border: 1px solid #1e293b;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .slide-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #1e293b;
-      padding-bottom: 8px;
-    }
-    .slide-num {
-      font-size: 11px;
-      font-weight: 700;
-      color: #f59e0b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .slide-badge {
-      background: rgba(59, 130, 246, 0.15);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      padding: 2px 8px;
-      border-radius: 9999px;
-      font-size: 10px;
-      font-weight: 700;
-    }
-    .slide-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #ffffff;
-      margin: 4px 0;
-    }
-    .slide-body {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .slide-text {
-      font-size: 13px;
-      color: #cbd5e1;
-      line-height: 1.6;
-      background: #050814;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border-left: 3px solid #f59e0b;
-    }
-    .slide-empty {
-      font-size: 12px;
-      color: #64748b;
-      font-style: italic;
-    }
-    .fallback-card {
-      max-width: 500px;
-      width: 100%;
-      padding: 24px;
-      background: #0b1120;
-      border: 1px solid #1e293b;
-      border-radius: 20px;
-      text-align: center;
-      margin: auto;
-    }
-    .icon-box {
-      width: 56px;
-      height: 56px;
-      background: rgba(245, 158, 11, 0.15);
-      color: #fbbf24;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 12px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .fallback-card h2 {
-      font-size: 18px;
-      color: #ffffff;
-      margin-bottom: 6px;
-    }
-    .fallback-card p {
-      font-size: 12px;
-      color: #94a3b8;
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
-    #loading-spinner {
-      margin: auto;
-      text-align: center;
-      color: #fbbf24;
-      font-size: 13px;
-      padding: 40px;
-    }
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid rgba(245, 158, 11, 0.2);
-      border-top-color: #f59e0b;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 12px;
-    }
+    body { font-family: system-ui, -apple-system, sans-serif; background-color: #050814; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: #0b1120; border-bottom: 1px solid #1e293b; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; }
+    .logo-badge { display: flex; align-items: center; gap: 10px; }
+    .badge { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .file-info h1 { font-size: 14px; font-weight: 700; color: #ffffff; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-info p { font-size: 10px; color: #94a3b8; }
+    .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; border: 1px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+    .btn-primary { background: #f59e0b; color: #000000; }
+    .btn-primary:hover { background: #fbbf24; }
+    .btn-secondary { background: #1e293b; color: #cbd5e1; border-color: #334155; }
+    .btn-secondary:hover { background: #334155; color: #ffffff; }
+    .btn-tab { background: #0b1120; color: #94a3b8; border-color: #1e293b; }
+    .btn-tab.active { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: #f59e0b; }
+    main { flex: 1; background: #030712; display: flex; flex-direction: column; align-items: center; padding: 16px; overflow-y: auto; width: 100%; }
+    .iframe-viewer { width: 100%; height: 86vh; border: none; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); background: #0b1120; }
+    .canvas-wrapper { margin-bottom: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6); border-radius: 8px; overflow: hidden; background: #ffffff; max-width: 100%; }
+    canvas { display: block; max-width: 100%; height: auto !important; }
+    .ppt-slide-card { width: 100%; max-width: 720px; background: #0b1120; border: 1px solid #1e293b; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 12px; }
+    .slide-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    .slide-num { font-size: 11px; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .slide-badge { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 8px; border-radius: 9999px; font-size: 10px; font-weight: 700; }
+    .slide-title { font-size: 18px; font-weight: 700; color: #ffffff; margin: 4px 0; }
+    .slide-body { display: flex; flex-direction: column; gap: 8px; }
+    .slide-text { font-size: 13px; color: #cbd5e1; line-height: 1.6; background: #050814; padding: 10px 14px; border-radius: 8px; border-left: 3px solid #f59e0b; }
+    .slide-empty { font-size: 12px; color: #64748b; font-style: italic; }
+    .fallback-card { max-width: 540px; width: 100%; padding: 28px; background: #0b1120; border: 1px solid #1e293b; border-radius: 20px; text-align: center; margin: auto; }
+    .icon-box { width: 56px; height: 56px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 24px; font-weight: bold; }
+    .fallback-card h2 { font-size: 18px; color: #ffffff; margin-bottom: 6px; }
+    .fallback-card p { font-size: 12px; color: #94a3b8; line-height: 1.5; margin-bottom: 20px; }
+    #loading-spinner { margin: auto; text-align: center; color: #fbbf24; font-size: 13px; padding: 40px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid rgba(245, 158, 11, 0.2); border-top-color: #f59e0b; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -463,34 +326,81 @@ const openPresentationWindow = (
       </div>
     </div>
     <div class="controls">
-      ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">Download File</button>` : ''}
-      <button class="btn btn-secondary" onclick="window.close()">Close</button>
+      <button class="btn btn-tab active" id="btn-mode-main" onclick="switchMode('main')">
+        ${isPPT ? '📊 Slide Cards' : '📄 Standard View'}
+      </button>
+      <button class="btn btn-tab" id="btn-mode-gdocs" onclick="switchMode('gdocs')">
+        🌐 Google Docs Viewer
+      </button>
+      ${isPPT ? `<button class="btn btn-tab" id="btn-mode-office" onclick="switchMode('office')">🏢 Office Live</button>` : ''}
+      ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">⬇️ Download</button>` : ''}
+      <button class="btn btn-secondary" onclick="window.close()">✖ Close</button>
     </div>
   </header>
 
   <main id="main-content">
-    ${
-      contentUrl
-        ? `<div id="loading-spinner">
-            <div class="spinner"></div>
-            Loading ${isPPT ? 'PowerPoint' : 'PDF'} Presentation...
-          </div>
-          <div id="render-area" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>`
-        : `<div class="fallback-card">
-            <div class="icon-box">${isPPT ? '📊' : '📄'}</div>
-            <h2>${cleanName}</h2>
-            <p>Verified presentation deck submission for E-Cell IIT Bombay Eureka! 2026 Competition.<br/>Click below to download and view presentation slides.</p>
-            ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">Download ${cleanName}</button>` : ''}
-          </div>`
-    }
+    <div id="loading-spinner">
+      <div class="spinner"></div>
+      Loading ${isPPT ? 'PowerPoint' : 'PDF'} Presentation...
+    </div>
+    <div id="render-area" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
   </main>
 
   <script>
+    const contentUrl = ${JSON.stringify(contentUrl || '')};
+    const isPPT = ${JSON.stringify(isPPT)};
+    const cleanName = ${JSON.stringify(cleanName)};
+    let activeBlobUrl = null;
+
+    function switchMode(mode) {
+      document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+      const mainArea = document.getElementById('render-area');
+      const spinner = document.getElementById('loading-spinner');
+      if (spinner) spinner.style.display = 'none';
+
+      const targetBtn = document.getElementById('btn-mode-' + mode);
+      if (targetBtn) targetBtn.classList.add('active');
+
+      if (mode === 'gdocs') {
+        if (contentUrl.startsWith('http://') || contentUrl.startsWith('https://')) {
+          let gUrl = contentUrl;
+          if (gUrl.includes('drive.google.com')) {
+            gUrl = gUrl.replace(/\/(view|edit)(\?.*)?$/i, '/preview');
+            mainArea.innerHTML = '<iframe src="' + gUrl + '" class="iframe-viewer"></iframe>';
+          } else {
+            const embedUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(gUrl) + '&embedded=true';
+            mainArea.innerHTML = '<iframe src="' + embedUrl + '" class="iframe-viewer"></iframe>';
+          }
+        } else if (activeBlobUrl) {
+          mainArea.innerHTML = '<iframe src="' + activeBlobUrl + '" class="iframe-viewer"></iframe>';
+        } else {
+          mainArea.innerHTML = '<div class="fallback-card"><div class="icon-box">🌐</div><h2>Google Docs Viewer</h2><p>Google Docs Viewer is active for web/cloud presentation URLs.<br/>For local device files, use Standard View or Download.</p><button class="btn btn-primary" onclick="downloadFile()">Download ' + escapeHtml(cleanName) + '</button></div>';
+        }
+        return;
+      }
+
+      if (mode === 'office') {
+        if (contentUrl.startsWith('http://') || contentUrl.startsWith('https://')) {
+          const officeUrl = 'https://view.officeapps.live.com/op/view.aspx?src=' + encodeURIComponent(contentUrl);
+          mainArea.innerHTML = '<iframe src="' + officeUrl + '" class="iframe-viewer"></iframe>';
+        } else {
+          mainArea.innerHTML = '<div class="fallback-card"><div class="icon-box">🏢</div><h2>Microsoft Office Live Viewer</h2><p>Office Live Viewer connects to cloud URLs.<br/>Use Standard Slide Cards or Download to view slides locally.</p><button class="btn btn-primary" onclick="downloadFile()">Download ' + escapeHtml(cleanName) + '</button></div>';
+        }
+        return;
+      }
+
+      // Default main mode
+      if (!isPPT) {
+        renderPdf();
+      } else {
+        renderPptx();
+      }
+    }
+
     function downloadFile() {
-      const url = ${JSON.stringify(contentUrl || '')};
+      const url = contentUrl;
       if (!url) return;
-      const isPPT = ${JSON.stringify(isPPT)};
-      let downloadName = ${JSON.stringify(cleanName)};
+      let downloadName = cleanName;
 
       if (url.startsWith('data:')) {
         try {
@@ -514,12 +424,9 @@ const openPresentationWindow = (
           document.body.removeChild(a);
           setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
           return;
-        } catch (e) {
-          console.error('Download error:', e);
-        }
+        } catch (e) { console.error('Download error:', e); }
       }
       
-      // If downloading a synthetic fallback record, use _Record.pdf to prevent PowerPoint file corruption warnings
       if (isPPT && (url.startsWith('blob:') || !url.startsWith('data:application/vnd'))) {
         downloadName = downloadName.replace(/\.pptx?$/i, '_Record.pdf');
       }
@@ -536,89 +443,122 @@ const openPresentationWindow = (
       return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    ${
-      !isPPT && contentUrl
-        ? `
-    (async function renderPdf() {
-      const url = ${JSON.stringify(contentUrl)};
+    async function renderPdf() {
+      const url = contentUrl;
       const mainArea = document.getElementById('render-area');
       const spinner = document.getElementById('loading-spinner');
+      if (!mainArea) return;
+      mainArea.innerHTML = '';
+
+      if (!url) {
+        if (spinner) spinner.style.display = 'none';
+        mainArea.innerHTML = '<div class="fallback-card"><div class="icon-box">📄</div><h2>' + escapeHtml(cleanName) + '</h2><p>Verified presentation deck record.</p></div>';
+        return;
+      }
+
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        if (spinner) spinner.style.display = 'none';
+        if (url.includes('drive.google.com')) {
+          const previewUrl = url.replace(/\/(view|edit)(\?.*)?$/i, '/preview');
+          mainArea.innerHTML = '<iframe src="' + previewUrl + '" class="iframe-viewer"></iframe>';
+          return;
+        }
+        const gdocsUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+        mainArea.innerHTML = '<iframe src="' + gdocsUrl + '" class="iframe-viewer"></iframe>';
+        return;
+      }
 
       try {
-        if (typeof pdfjsLib === 'undefined') {
-          throw new Error('PDF.js not loaded');
-        }
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        let loadingTask;
         if (url.startsWith('data:')) {
-          const base64Data = url.split(',')[1];
+          const parts = url.split(',');
+          const base64Data = parts[1];
           const raw = atob(base64Data);
           const uint8Array = new Uint8Array(raw.length);
           for (let i = 0; i < raw.length; i++) {
             uint8Array[i] = raw.charCodeAt(i);
           }
-          loadingTask = pdfjsLib.getDocument({ data: uint8Array });
-        } else {
-          loadingTask = pdfjsLib.getDocument(url);
+          const blob = new Blob([uint8Array], { type: 'application/pdf' });
+          activeBlobUrl = URL.createObjectURL(blob);
+        } else if (url.startsWith('blob:')) {
+          activeBlobUrl = url;
         }
 
-        const pdf = await loadingTask.promise;
-        if (spinner) spinner.style.display = 'none';
+        if (typeof pdfjsLib !== 'undefined') {
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          const page = await pdf.getPage(pageNum);
-          const viewport = page.getViewport({ scale: 1.5 });
+          let loadingTask;
+          if (url.startsWith('data:')) {
+            const parts = url.split(',');
+            const base64Data = parts[1];
+            const raw = atob(base64Data);
+            const uint8Array = new Uint8Array(raw.length);
+            for (let i = 0; i < raw.length; i++) {
+              uint8Array[i] = raw.charCodeAt(i);
+            }
+            loadingTask = pdfjsLib.getDocument({ data: uint8Array });
+          } else {
+            loadingTask = pdfjsLib.getDocument(url);
+          }
 
-          const wrapper = document.createElement('div');
-          wrapper.className = 'canvas-wrapper';
+          const pdf = await loadingTask.promise;
+          if (spinner) spinner.style.display = 'none';
 
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
+          for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const wrapper = document.createElement('div');
+            wrapper.className = 'canvas-wrapper';
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            wrapper.appendChild(canvas);
+            mainArea.appendChild(wrapper);
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+          }
+          return;
+        }
 
-          wrapper.appendChild(canvas);
-          mainArea.appendChild(wrapper);
-
-          await page.render({ canvasContext: context, viewport: viewport }).promise;
+        if (activeBlobUrl) {
+          if (spinner) spinner.style.display = 'none';
+          mainArea.innerHTML = '<iframe src="' + activeBlobUrl + '" class="iframe-viewer"></iframe>';
+          return;
         }
       } catch (err) {
         console.warn('PDF.js render fallback:', err);
         if (spinner) spinner.style.display = 'none';
         
-        mainArea.innerHTML = \`
-          <div class="fallback-card">
-            <div class="icon-box">📄</div>
-            <h2>${cleanName}</h2>
-            <p>Presentation document loaded cleanly.<br/>Click below to download or view original file.</p>
-            <button class="btn btn-primary" onclick="downloadFile()">Download ${cleanName}</button>
-          </div>
-        \`;
+        if (activeBlobUrl) {
+          mainArea.innerHTML = '<iframe src="' + activeBlobUrl + '" class="iframe-viewer"></iframe>';
+        } else {
+          mainArea.innerHTML = \`<div class="fallback-card"><div class="icon-box">📄</div><h2>\${escapeHtml(cleanName)}</h2><p>Presentation document loaded cleanly.<br/>Click below to download or view original file.</p><button class="btn btn-primary" onclick="downloadFile()">Download \${escapeHtml(cleanName)}</button></div>\`;
+        }
       }
-    })();
-    `
-        : isPPT && contentUrl
-        ? `
-    (async function renderPptx() {
-      const url = ${JSON.stringify(contentUrl)};
+    }
+
+    async function renderPptx() {
+      const url = contentUrl;
       const mainArea = document.getElementById('render-area');
       const spinner = document.getElementById('loading-spinner');
+      if (!mainArea) return;
+      mainArea.innerHTML = '';
 
       if (!url) return;
 
       if (url.startsWith('http://') || url.startsWith('https://')) {
         if (spinner) spinner.style.display = 'none';
+        if (url.includes('drive.google.com')) {
+          const previewUrl = url.replace(/\/(view|edit)(\?.*)?$/i, '/preview');
+          mainArea.innerHTML = '<iframe src="' + previewUrl + '" class="iframe-viewer"></iframe>';
+          return;
+        }
         const officeUrl = 'https://view.officeapps.live.com/op/view.aspx?src=' + encodeURIComponent(url);
-        mainArea.innerHTML = '<iframe src="' + officeUrl + '" style="width:100%;height:85vh;border:none;border-radius:12px;"></iframe>';
+        mainArea.innerHTML = '<iframe src="' + officeUrl + '" class="iframe-viewer"></iframe>';
         return;
       }
 
       try {
-        if (typeof JSZip === 'undefined') {
-          throw new Error('JSZip not loaded');
-        }
+        if (typeof JSZip === 'undefined') throw new Error('JSZip not loaded');
 
         let arrayBuffer;
         if (url.startsWith('data:')) {
@@ -635,8 +575,6 @@ const openPresentationWindow = (
         }
 
         const zip = await JSZip.loadAsync(arrayBuffer);
-
-        // 1. Extract embedded images & graphics from ppt/media/
         const slideImages = [];
         const mediaFolder = zip.folder('ppt/media');
         if (mediaFolder) {
@@ -654,7 +592,6 @@ const openPresentationWindow = (
           await Promise.all(promises);
         }
 
-        // 2. Parse slide XML files from ppt/slides/slide*.xml
         const slideFiles = [];
         zip.folder('ppt/slides').forEach((relativePath, file) => {
           if (relativePath.match(/^slide\d+\.xml$/i)) {
@@ -664,10 +601,7 @@ const openPresentationWindow = (
         });
 
         slideFiles.sort((a, b) => a.num - b.num);
-
-        if (slideFiles.length === 0) {
-          throw new Error('No slide XML files found');
-        }
+        if (slideFiles.length === 0) throw new Error('No slide XML files found');
 
         if (spinner) spinner.style.display = 'none';
 
@@ -676,7 +610,6 @@ const openPresentationWindow = (
           const xmlText = await item.file.async('text');
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-
           const textNodes = xmlDoc.getElementsByTagNameNS('*', 't');
           const textArray = [];
           for (let i = 0; i < textNodes.length; i++) {
@@ -690,35 +623,17 @@ const openPresentationWindow = (
 
           const slideCard = document.createElement('div');
           slideCard.className = 'ppt-slide-card';
-          slideCard.innerHTML = \`
-            <div class="slide-header">
-              <span class="slide-num">Slide \${item.num} of \${slideFiles.length}</span>
-              <span class="slide-badge">📊 PowerPoint Slide</span>
-            </div>
-            <h2 class="slide-title">\${escapeHtml(slideTitle)}</h2>
-            \${assocImage ? \`<img src="\${assocImage}" alt="Slide Visual" style="width:100%;max-height:420px;object-fit:contain;border-radius:12px;border:1px solid #1e293b;margin:12px 0;background:#050814;" />\` : ''}
-            <div class="slide-body">
-              \${slideBody.length > 0 ? slideBody.map(t => \`<p class="slide-text">\${escapeHtml(t)}</p>\`).join('') : '<p class="slide-empty">Presentation Slide Content</p>'}
-            </div>
-          \`;
+          slideCard.innerHTML = \`<div class="slide-header"><span class="slide-num">Slide \${item.num} of \${slideFiles.length}</span><span class="slide-badge">📊 PowerPoint Slide</span></div><h2 class="slide-title">\${escapeHtml(slideTitle)}</h2>\${assocImage ? \`<img src="\${assocImage}" alt="Slide Visual" style="width:100%;max-height:420px;object-fit:contain;border-radius:12px;border:1px solid #1e293b;margin:12px 0;background:#050814;" />\` : ''}<div class="slide-body">\${slideBody.length > 0 ? slideBody.map(t => \`<p class="slide-text">\${escapeHtml(t)}</p>\`).join('') : '<p class="slide-empty">Presentation Slide Content</p>'}</div>\`;
           mainArea.appendChild(slideCard);
         }
       } catch (err) {
         console.warn('PPTX parsing fallback:', err);
         if (spinner) spinner.style.display = 'none';
-        mainArea.innerHTML = \`
-          <div class="fallback-card">
-            <div class="icon-box">📊</div>
-            <h2>${cleanName}</h2>
-            <p>PowerPoint Presentation submission verified for E-Cell IIT Bombay Eureka! 2026 Competition.<br/>Click below to download and view presentation slides.</p>
-            <button class="btn btn-primary" onclick="downloadFile()">Download ${cleanName}</button>
-          </div>
-        \`;
+        mainArea.innerHTML = \`<div class="fallback-card"><div class="icon-box">📊</div><h2>\${escapeHtml(cleanName)}</h2><p>PowerPoint Presentation submission verified.<br/>Click below to download and view presentation slides.</p><button class="btn btn-primary" onclick="downloadFile()">Download \${escapeHtml(cleanName)}</button></div>\`;
       }
-    })();
-    `
-        : ''
     }
+
+    if (!isPPT) renderPdf(); else renderPptx();
   </script>
 </body>
 </html>`;
@@ -729,7 +644,7 @@ const openPresentationWindow = (
 };
 
 /**
- * Downloads a team's pitch deck directly to disk without alert popups or blank tabs.
+ * Downloads a team's pitch deck.
  */
 export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf') => {
   if (!url || !url.trim()) {
@@ -738,35 +653,25 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
   }
 
   let cleanUrl = url.trim();
-  const cleanName = fileName.trim() || 'Pitch_Deck.pptx';
+  const cleanName = fileName.trim() || 'Pitch_Deck.pdf';
   const lowerFileName = cleanName.toLowerCase();
   const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
 
-  // 1. If placeholder string, attempt to retrieve cached base64 file data from FileStorage
   if (cleanUrl.startsWith('[')) {
-    const cached = FileStorage.getFileSync(cleanName) || 
-                   FileStorage.getFileSync(cleanUrl) || 
-                   await FileStorage.getFile(cleanName);
-    if (cached && cached.startsWith('data:')) {
-      cleanUrl = cached;
-    }
+    const cached = FileStorage.getFileSync(cleanName) || FileStorage.getFileSync(cleanUrl) || await FileStorage.getFile(cleanName);
+    if (cached && cached.startsWith('data:')) cleanUrl = cached;
   }
 
-  // 2. Base64 Data URI (uploaded presentation or PDF file)
   if (cleanUrl.startsWith('data:')) {
     try {
       const parts = cleanUrl.split(',');
       const mimeMatch = parts[0].match(/:(.*?);/);
       const mimeType = mimeMatch ? mimeMatch[1] : (isPPT ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'application/pdf');
-      const base64Data = parts[1];
-      const binaryString = atob(base64Data);
+      const binaryString = atob(parts[1]);
       const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
+      for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
       const blob = new Blob([bytes], { type: mimeType });
       const blobUrl = URL.createObjectURL(blob);
-
       const a = document.createElement('a');
       a.href = blobUrl;
       a.download = cleanName;
@@ -775,12 +680,9 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
       return;
-    } catch (e) {
-      console.error('Download base64 error:', e);
-    }
+    } catch (e) { console.error('Download base64 error:', e); }
   }
 
-  // 3. Placeholder string fallback: download synthetic record PDF to avoid corrupting PowerPoint (.pptx) file extensions
   if (cleanUrl.startsWith('[')) {
     const downloadName = isPPT ? cleanName.replace(/\.pptx?$/i, '_Record.pdf') : cleanName;
     const blob = await createPresentationBlob(downloadName, false);
@@ -795,9 +697,7 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
     return;
   }
 
-  // 4. Web URLs (HTTP / HTTPS)
   const formattedUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
-
   try {
     const response = await fetch(formattedUrl);
     if (response.ok) {
@@ -812,11 +712,8 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
       return;
     }
-  } catch (err) {
-    console.warn('Fetch fallback for pitch deck download:', err);
-  }
+  } catch (err) { console.warn('Fetch fallback:', err); }
 
-  // Fallback if cross-origin fetch is restricted by CORS
   const a = document.createElement('a');
   a.href = formattedUrl;
   a.download = cleanName;
@@ -826,7 +723,7 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
 };
 
 /**
- * Safely opens or views a team's pitch deck presentation (PDF or PPT).
+ * Safely opens or views a team's pitch deck.
  */
 export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', teamId?: string) => {
   if (!url || !url.trim()) {
@@ -835,60 +732,22 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
   }
 
   let cleanUrl = url.trim();
-  const cleanName = fileName.trim() || 'Pitch_Deck.pptx';
+  const cleanName = fileName.trim() || 'Pitch_Deck.pdf';
   const lowerFileName = cleanName.toLowerCase();
   const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
 
-  // If placeholder string or non-data URL, attempt resolving full base64 file data from Firestore chunks or local IndexedDB
   if (cleanUrl.startsWith('[') || !cleanUrl.startsWith('data:')) {
     const match = cleanUrl.match(/\[File Uploaded:\s*(.*?)\]/i);
     const extractedName = match ? match[1].trim() : cleanName;
-
-    // 1. Try local IndexedDB / LocalStorage cache
-    let cached = await FileStorage.getFile(extractedName) || 
-                 await FileStorage.getFile(cleanName) || 
-                 (teamId ? await FileStorage.getFile(teamId) : null) ||
-                 FileStorage.getFileSync(extractedName) || 
-                 FileStorage.getFileSync(cleanName);
-
-    // 2. If not in local cache (e.g. accessed from secondary device), fetch chunks from Firestore
-    if ((!cached || !cached.startsWith('data:')) && teamId) {
-      cached = await FirebaseService.fetchPitchDeckFile(teamId, cleanName);
-    }
-
-    if (cached && cached.startsWith('data:')) {
-      cleanUrl = cached;
-    }
+    let cached = await FileStorage.getFile(extractedName) || await FileStorage.getFile(cleanName) || (teamId ? await FileStorage.getFile(teamId) : null) || FileStorage.getFileSync(extractedName) || FileStorage.getFileSync(cleanName);
+    if ((!cached || !cached.startsWith('data:')) && teamId) cached = await FirebaseService.fetchPitchDeckFile(teamId, cleanName);
+    if (cached && cached.startsWith('data:')) cleanUrl = cached;
   }
 
-  // 1. Base64 Data URI (pass Data URI string directly to popup window to avoid parent Blob URL fetch restrictions)
-  if (cleanUrl.startsWith('data:')) {
-    openPresentationWindow(cleanName, cleanUrl, isPPT);
-    return;
-  }
-
-  // 2. Placeholder string fallback (Generate valid PDF/PPT Blob & render Presentation Viewer window)
-  if (cleanUrl.startsWith('[')) {
-    const blob = await createPresentationBlob(cleanName, isPPT);
-    const blobUrl = URL.createObjectURL(blob);
-    openPresentationWindow(cleanName, blobUrl, isPPT);
-    return;
-  }
-
-  // 3. Web URLs (HTTP / HTTPS cloud URLs such as Firebase Storage, Google Drive, Canva, etc.)
-  let targetUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
-
-  if (isPPT) {
-    if (targetUrl.includes('firebasestorage.googleapis.com') || targetUrl.includes('drive.google.com') || targetUrl.includes('canva.com') || targetUrl.includes('officeapps.live.com')) {
-      const viewerUrl = targetUrl.includes('firebasestorage.googleapis.com') 
-        ? `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(targetUrl)}`
-        : targetUrl;
-      window.open(viewerUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      openPresentationWindow(cleanName, targetUrl, true);
-    }
+  if (cleanUrl.startsWith('data:') || cleanUrl.startsWith('[')) {
+    const targetUrl = cleanUrl.startsWith('[') ? await createPresentationBlob(cleanName, isPPT).then(blob => URL.createObjectURL(blob)) : cleanUrl;
+    openPresentationWindow(cleanName, targetUrl, isPPT);
   } else {
-    openPresentationWindow(cleanName, targetUrl, false);
+    openPresentationWindow(cleanName, cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`, isPPT);
   }
 };
-
