@@ -95,51 +95,58 @@ export class FirebaseService {
     const registrationId = teamData.id || `NEC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const createdAtIso = teamData.createdAt || new Date().toISOString();
 
-    let finalPitchDeckUrl = teamData.pitchDeckUrl;
+    const rawPitchDeckUrl = teamData.pitchDeckUrl;
 
-    if (teamData.pitchDeckUrl && teamData.pitchDeckUrl.startsWith('data:')) {
-      FileStorage.saveFile(registrationId, teamData.pitchDeckUrl);
-      if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
-      if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
-
-      // Upload file to Firebase Cloud Storage so admins on deployed production can view the exact uploaded file
-      try {
-        const timestamp = Date.now();
-        const cleanName = (teamData.pitchDeckFileName || 'Pitch_Deck.pdf').replace(/[^a-zA-Z0-9._-]/g, '_');
-        const storageRef = ref(storage, `pitch_decks/${timestamp}_${cleanName}`);
-        await uploadString(storageRef, teamData.pitchDeckUrl, 'data_url');
-        const cloudUrl = await getDownloadURL(storageRef);
-        if (cloudUrl) {
-          finalPitchDeckUrl = cloudUrl;
-          console.log('✅ Pitch deck uploaded to Firebase Cloud Storage:', cloudUrl);
-        }
-      } catch (storageErr) {
-        console.warn('⚠️ Firebase Storage upload warning:', storageErr);
-      }
+    if (rawPitchDeckUrl && rawPitchDeckUrl.startsWith('data:')) {
+      FileStorage.saveFile(registrationId, rawPitchDeckUrl);
+      if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, rawPitchDeckUrl);
+      if (teamData.startupName) FileStorage.saveFile(teamData.startupName, rawPitchDeckUrl);
     }
 
-    // Prevent Firestore document size limit error (1MB) if pitchDeckUrl remains a large base64 file data URI
-    if (finalPitchDeckUrl && finalPitchDeckUrl.startsWith('data:') && finalPitchDeckUrl.length > 200000) {
-      finalPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
+    // Prevent Firestore document size limit error (1MB) if pitchDeckUrl is a large base64 file data URI
+    let sanitizedPitchDeckUrl = rawPitchDeckUrl;
+    if (sanitizedPitchDeckUrl && sanitizedPitchDeckUrl.startsWith('data:') && sanitizedPitchDeckUrl.length > 200000) {
+      sanitizedPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
     }
 
     const newTeam: TeamRegistration = {
       ...teamData,
       id: registrationId,
       createdAt: createdAtIso,
-      pitchDeckUrl: finalPitchDeckUrl,
+      pitchDeckUrl: sanitizedPitchDeckUrl,
       status: teamData.status || 'Pending'
     };
 
+    // 1. SAVE DIRECTLY TO FIREBASE FIRESTORE DATABASE IMMEDIATELY
     try {
       const docRef = doc(db, COLLECTION_NAME, registrationId);
       await setDoc(docRef, {
         ...newTeam,
         serverTimestamp: Timestamp.now()
       });
-      console.log('✅ Registration saved to Firebase Firestore ID:', registrationId);
+      console.log('✅ Registration saved directly to Firebase Firestore ID:', registrationId);
     } catch (err) {
-      console.error('❌ Firebase Save Error:', err);
+      console.error('❌ Firebase Firestore Save Error:', err);
+    }
+
+    // 2. Upload file to Firebase Cloud Storage asynchronously in background & update Firestore doc with cloud URL
+    if (rawPitchDeckUrl && rawPitchDeckUrl.startsWith('data:')) {
+      (async () => {
+        try {
+          const timestamp = Date.now();
+          const cleanName = (teamData.pitchDeckFileName || 'Pitch_Deck.pdf').replace(/[^a-zA-Z0-9._-]/g, '_');
+          const storageRef = ref(storage, `pitch_decks/${timestamp}_${cleanName}`);
+          await uploadString(storageRef, rawPitchDeckUrl, 'data_url');
+          const cloudUrl = await getDownloadURL(storageRef);
+          if (cloudUrl) {
+            const docRef = doc(db, COLLECTION_NAME, registrationId);
+            await updateDoc(docRef, { pitchDeckUrl: cloudUrl });
+            console.log('✅ Updated Firebase Firestore document with Storage cloud URL:', cloudUrl);
+          }
+        } catch (storageErr) {
+          console.warn('⚠️ Firebase Storage upload notice (Firestore document saved):', storageErr);
+        }
+      })();
     }
 
     return newTeam;
