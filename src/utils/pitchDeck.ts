@@ -114,15 +114,21 @@ ET`;
 };
 
 /**
- * Opens a styled presentation viewer window in the browser.
- * Ensures PDF and PPT presentations render cleanly across all devices (Mobile Android/iOS & Desktop)
- * using PDF.js canvas rendering to prevent mobile browser iframe [PDF] uuid [Open] placeholders.
+ * Opens a styled presentation viewer window in the browser or initiates direct inspect/download on mobile.
  */
 const openPresentationWindow = (
   cleanName: string,
   contentUrl: string | null,
   isPPT: boolean
 ) => {
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  // If on mobile and it's a PPT file, prompt direct download since mobile browsers don't render raw PPT natively
+  if (isMobile && isPPT && contentUrl) {
+    downloadPitchDeck(contentUrl, cleanName);
+    return;
+  }
+
   const win = window.open('', '_blank');
   if (!win) {
     if (contentUrl) {
@@ -229,9 +235,10 @@ const openPresentationWindow = (
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0;
+      justify-content: center;
+      padding: 16px;
       overflow-y: auto;
-      height: calc(100vh - 60px);
+      min-height: calc(100vh - 60px);
     }
     .pdf-viewer-frame {
       width: 100%;
@@ -243,37 +250,43 @@ const openPresentationWindow = (
     .fallback-card {
       max-width: 500px;
       width: 100%;
-      padding: 24px;
+      padding: 32px 24px;
       background: #0b1120;
       border: 1px solid #1e293b;
-      border-radius: 16px;
+      border-radius: 20px;
       text-align: center;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
       margin: auto;
     }
     .fallback-card h2 {
-      font-size: 18px;
+      font-size: 20px;
+      font-weight: 800;
       color: #f8fafc;
       margin-bottom: 8px;
     }
     .fallback-card p {
       font-size: 13px;
       color: #94a3b8;
-      line-height: 1.5;
-      margin-bottom: 20px;
+      line-height: 1.6;
+      margin-bottom: 24px;
     }
     .icon-box {
-      width: 56px;
-      height: 56px;
-      background: rgba(245, 158, 11, 0.1);
+      width: 64px;
+      height: 64px;
+      background: rgba(245, 158, 11, 0.15);
       border: 1px solid rgba(245, 158, 11, 0.3);
       color: #f59e0b;
-      border-radius: 12px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 16px;
-      font-size: 24px;
+      margin: 0 auto 20px;
+      font-size: 32px;
+    }
+    .action-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
   </style>
 </head>
@@ -283,12 +296,11 @@ const openPresentationWindow = (
       <span class="badge">Eureka! 2026</span>
       <div class="file-info">
         <h1 title="${cleanName}">${cleanName}</h1>
-        <p>E-Cell IIT Bombay • ${isPPT ? 'PowerPoint Presentation (.pptx)' : 'PDF Presentation Document'}</p>
+        <p>E-Cell IIT Bombay • ${isPPT ? 'PowerPoint Presentation (.pptx / .ppt)' : 'PDF Presentation Document'}</p>
       </div>
     </div>
     <div class="controls">
-      ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">⬇ Download File</button>` : ''}
-      ${!isPPT && contentUrl && !contentUrl.startsWith('data:') ? `<a class="btn btn-secondary" href="https://docs.google.com/viewer?url=${encodeURIComponent(contentUrl)}&embedded=false" target="_blank">🌐 Google Docs Viewer</a>` : ''}
+      ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">⬇ Download Presentation</button>` : ''}
       <button class="btn btn-secondary" onclick="window.close()">✕ Close</button>
     </div>
   </header>
@@ -301,7 +313,7 @@ const openPresentationWindow = (
               <div class="fallback-card">
                 <div class="icon-box">📄</div>
                 <h2>${cleanName}</h2>
-                <p>Your browser does not support embedded PDF viewing.</p>
+                <p>Presentation document ready for inspection.</p>
                 <button class="btn btn-primary" onclick="downloadFile()">⬇ Download ${cleanName}</button>
               </div>
             </iframe>
@@ -309,8 +321,10 @@ const openPresentationWindow = (
         : `<div class="fallback-card">
             <div class="icon-box">${isPPT ? '📊' : '📄'}</div>
             <h2>${cleanName}</h2>
-            <p>Verified presentation deck submission for E-Cell IIT Bombay Eureka! 2026 Competition.<br/>Click below to download and inspect presentation slides.</p>
-            ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">⬇ Download ${cleanName}</button>` : ''}
+            <p><strong>Presentation File Verified:</strong> Uploaded presentation slides for E-Cell IIT Bombay Eureka! 2026 competition are stored securely in Cloud Firestore.<br/><br/>Click below to open and inspect the presentation slides on your device.</p>
+            <div class="action-group">
+              ${contentUrl ? `<button class="btn btn-primary" style="justify-content-center; padding: 12px 20px; font-size: 14px;" onclick="downloadFile()">⬇ Open / Download Presentation File</button>` : ''}
+            </div>
           </div>`
     }
   </main>

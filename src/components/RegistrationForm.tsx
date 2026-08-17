@@ -378,7 +378,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                 <div className="relative border-2 border-dashed border-slate-700 hover:border-amber-500/50 rounded-xl p-4 text-center cursor-pointer transition-colors bg-[#0B1120]">
                   <input
                     type="file"
-                    accept=".pdf,.pptx,application/pdf,application/vnd.ms-powerpoint"
+                    accept=".pdf,.ppt,.pptx,.ppsx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
                     onChange={handleFileUpload}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
