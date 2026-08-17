@@ -68,7 +68,7 @@ export class FirebaseService {
   }
 
   /**
-   * Fetches presentation file chunks from Firestore subcollection registrations/{teamId}/fileChunks
+   * Fetches presentation file chunks from Firestore document or subcollection registrations/{teamId}/fileChunks
    * and re-assembles the complete original base64 file data URI for any device.
    */
   static async fetchPitchDeckFile(teamId: string, fileName?: string): Promise<string | null> {
@@ -81,7 +81,21 @@ export class FirebaseService {
       return localCached;
     }
 
-    // 2. Query Firestore subcollection registrations/{teamId}/fileChunks
+    // 2. Fetch main document directly from Firestore
+    try {
+      const docSnap = await getDocs(query(collection(db, COLLECTION_NAME)));
+      const matchingDoc = docSnap.docs.find(d => d.id === teamId);
+      if (matchingDoc) {
+        const data = matchingDoc.data();
+        if (data.pitchDeckBase64 && typeof data.pitchDeckBase64 === 'string' && data.pitchDeckBase64.startsWith('data:')) {
+          FileStorage.saveFile(teamId, data.pitchDeckBase64);
+          if (fileName) FileStorage.saveFile(fileName, data.pitchDeckBase64);
+          return data.pitchDeckBase64;
+        }
+      }
+    } catch (e) {}
+
+    // 3. Query Firestore subcollection registrations/{teamId}/fileChunks
     try {
       const chunksRef = collection(db, COLLECTION_NAME, teamId, 'fileChunks');
       const snapshot = await getDocs(chunksRef);
@@ -125,7 +139,7 @@ export class FirebaseService {
             const firestoreTeams: TeamRegistration[] = snapshot.docs.map((docSnap) => {
               const data = docSnap.data();
               const teamId = docSnap.id;
-              let pitchDeckUrl = data.pitchDeckUrl;
+              let pitchDeckUrl = data.pitchDeckBase64 || data.pitchDeckUrl;
 
               // Check LocalStorage and FileStorage for cached base64 file data
               if (!pitchDeckUrl || pitchDeckUrl.startsWith('[')) {
@@ -184,11 +198,16 @@ export class FirebaseService {
     const createdAtIso = teamData.createdAt || new Date().toISOString();
 
     let finalPitchDeckUrl = teamData.pitchDeckUrl;
+    let pitchDeckBase64ToStore: string | null = null;
 
     if (teamData.pitchDeckUrl && teamData.pitchDeckUrl.startsWith('data:')) {
       FileStorage.saveFile(registrationId, teamData.pitchDeckUrl);
       if (teamData.pitchDeckFileName) FileStorage.saveFile(teamData.pitchDeckFileName, teamData.pitchDeckUrl);
       if (teamData.startupName) FileStorage.saveFile(teamData.startupName, teamData.pitchDeckUrl);
+
+      if (teamData.pitchDeckUrl.length < 750000) {
+        pitchDeckBase64ToStore = teamData.pitchDeckUrl;
+      }
 
       // Store base64 file data in Firestore subcollection chunks (400KB per chunk)
       try {
@@ -266,6 +285,7 @@ export class FirebaseService {
       const docRef = doc(db, COLLECTION_NAME, registrationId);
       await setDoc(docRef, sanitizeForFirestore({
         ...newTeam,
+        pitchDeckBase64: pitchDeckBase64ToStore,
         serverTimestamp: Timestamp.now()
       }), { merge: true });
       console.log('✅ Registration saved to Firebase Firestore ID:', registrationId);
