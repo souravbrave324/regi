@@ -114,7 +114,8 @@ ET`;
 
 /**
  * Opens a styled presentation viewer window in the browser.
- * Ensures PDF and PPT presentations render cleanly across all devices without blank tabs.
+ * Ensures PDF and PPT presentations render cleanly across all devices (Mobile Android/iOS & Desktop)
+ * using PDF.js canvas rendering to prevent mobile browser iframe [PDF] uuid [Open] placeholders.
  */
 const openPresentationWindow = (
   cleanName: string,
@@ -130,7 +131,6 @@ const openPresentationWindow = (
   }
 
   const title = `${cleanName} — Pitch Presentation`;
-  const isPdfBlob = contentUrl && (contentUrl.startsWith('blob:') || contentUrl.startsWith('data:application/pdf'));
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -144,19 +144,22 @@ const openPresentationWindow = (
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: #050814;
       color: #f8fafc;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
     header {
       background: #0b1120;
       border-bottom: 1px solid #1e293b;
-      padding: 12px 20px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-wrap: wrap;
     }
     .logo-badge {
       display: flex;
@@ -174,21 +177,25 @@ const openPresentationWindow = (
       text-transform: uppercase;
     }
     .file-info h1 {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: #ffffff;
+      max-width: 260px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .file-info p {
-      font-size: 11px;
+      font-size: 10px;
       color: #94a3b8;
     }
-    .actions {
+    .controls {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .btn {
-      padding: 8px 16px;
+      padding: 6px 14px;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 700;
@@ -214,79 +221,112 @@ const openPresentationWindow = (
     }
     main {
       flex: 1;
-      position: relative;
       background: #030712;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
     }
-    iframe, embed, object {
-      width: 100%;
-      height: 100%;
-      border: none;
+    .canvas-wrapper {
+      margin-bottom: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+      max-width: 100%;
+    }
+    canvas {
+      display: block;
+      max-width: 100%;
+      height: auto !important;
     }
     .fallback-card {
-      max-width: 540px;
-      width: 90%;
-      padding: 32px;
+      max-width: 500px;
+      width: 100%;
+      padding: 24px;
       background: #0b1120;
       border: 1px solid #1e293b;
       border-radius: 20px;
       text-align: center;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      margin: auto;
     }
     .icon-box {
-      width: 64px;
-      height: 64px;
+      width: 56px;
+      height: 56px;
       background: rgba(245, 158, 11, 0.15);
       color: #fbbf24;
-      border-radius: 16px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 16px;
-      font-size: 28px;
+      margin: 0 auto 12px;
+      font-size: 24px;
       font-weight: bold;
     }
     .fallback-card h2 {
-      font-size: 20px;
+      font-size: 18px;
       color: #ffffff;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .fallback-card p {
-      font-size: 13px;
+      font-size: 12px;
       color: #94a3b8;
-      line-height: 1.6;
-      margin-bottom: 24px;
+      line-height: 1.5;
+      margin-bottom: 20px;
     }
+    #loading-spinner {
+      margin: auto;
+      text-align: center;
+      color: #fbbf24;
+      font-size: 13px;
+      padding: 40px;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(245, 158, 11, 0.2);
+      border-top-color: #f59e0b;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
   <header>
     <div class="logo-badge">
       <span class="badge">Eureka! 2026</span>
       <div class="file-info">
-        <h1>${cleanName}</h1>
+        <h1 title="${cleanName}">${cleanName}</h1>
         <p>E-Cell IIT Bombay • ${isPPT ? 'PowerPoint Presentation (.pptx)' : 'PDF Presentation Document'}</p>
       </div>
     </div>
-    <div class="actions">
-      ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">Download Presentation</button>` : ''}
-      <button class="btn btn-secondary" onclick="window.close()">Close Window</button>
+    <div class="controls">
+      ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">Download File</button>` : ''}
+      <button class="btn btn-secondary" onclick="window.close()">Close</button>
     </div>
   </header>
-  <main>
+
+  <main id="main-content">
     ${
-      contentUrl && (isPdfBlob || contentUrl.startsWith('http'))
-        ? `<iframe src="${contentUrl}" type="application/pdf"></iframe>`
+      !isPPT && contentUrl
+        ? `<div id="loading-spinner">
+            <div class="spinner"></div>
+            Loading PDF Presentation...
+          </div>
+          <div id="pdf-render-area" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>`
         : `<div class="fallback-card">
             <div class="icon-box">${isPPT ? '📊' : '📄'}</div>
             <h2>${cleanName}</h2>
-            <p>Presentation submission verified for E-Cell IIT Bombay Eureka! 2026 Competition.<br/>Click below to download and view full presentation slides locally.</p>
+            <p>Verified presentation deck submission for E-Cell IIT Bombay Eureka! 2026 Competition.<br/>Click below to download and view presentation slides.</p>
             ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">Download ${cleanName}</button>` : ''}
           </div>`
     }
   </main>
+
   <script>
     function downloadFile() {
       const url = ${JSON.stringify(contentUrl || '')};
@@ -297,6 +337,72 @@ const openPresentationWindow = (
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+    }
+
+    ${
+      !isPPT && contentUrl
+        ? `
+    (async function renderPdf() {
+      const url = ${JSON.stringify(contentUrl)};
+      const mainArea = document.getElementById('pdf-render-area');
+      const spinner = document.getElementById('loading-spinner');
+
+      try {
+        if (typeof pdfjsLib === 'undefined') {
+          throw new Error('PDF.js not loaded');
+        }
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let loadingTask;
+        if (url.startsWith('data:')) {
+          const base64Data = url.split(',')[1];
+          const raw = atob(base64Data);
+          const uint8Array = new Uint8Array(raw.length);
+          for (let i = 0; i < raw.length; i++) {
+            uint8Array[i] = raw.charCodeAt(i);
+          }
+          loadingTask = pdfjsLib.getDocument({ data: uint8Array });
+        } else {
+          loadingTask = pdfjsLib.getDocument(url);
+        }
+
+        const pdf = await loadingTask.promise;
+        if (spinner) spinner.style.display = 'none';
+
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const viewport = page.getViewport({ scale: 1.5 });
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'canvas-wrapper';
+
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          wrapper.appendChild(canvas);
+          mainArea.appendChild(wrapper);
+
+          await page.render({ canvasContext: context, viewport: viewport }).promise;
+        }
+      } catch (err) {
+        console.warn('PDF.js render fallback:', err);
+        if (spinner) spinner.style.display = 'none';
+        
+        mainArea.innerHTML = \`
+          <div class="fallback-card">
+            <div class="icon-box">📄</div>
+            <h2>${cleanName}</h2>
+            <p>Presentation document loaded cleanly.<br/>Click below to download or view original file.</p>
+            <button class="btn btn-primary" onclick="downloadFile()">Download ${cleanName}</button>
+          </div>
+        \`;
+      }
+    })();
+    `
+        : ''
     }
   </script>
 </body>
