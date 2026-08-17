@@ -119,7 +119,7 @@ export class FirebaseService {
     }
 
     // Prevent Firestore document size limit error (1MB) if pitchDeckUrl remains a large base64 file data URI
-    if (finalPitchDeckUrl && finalPitchDeckUrl.startsWith('data:') && finalPitchDeckUrl.length > 200000) {
+    if (finalPitchDeckUrl && finalPitchDeckUrl.startsWith('data:') && finalPitchDeckUrl.length > 800000) {
       finalPitchDeckUrl = `[File Uploaded: ${teamData.pitchDeckFileName || 'Pitch_Deck.pdf'}]`;
     }
 
