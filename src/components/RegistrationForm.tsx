@@ -23,8 +23,9 @@ const DOMAINS: IndustryDomain[] = [
 ];
 
 export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, onCancel }) => {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const [startupName, setStartupName] = useState('');
   const [stage, setStage] = useState<StartupStage>('Ideation');
@@ -147,22 +148,28 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (!eurekaTeamId.trim()) {
       setErrorMsg('Eureka! Team ID is required.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     if (!necIdReferral.trim()) {
       setErrorMsg('NEC ID / Referral code is required.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     if (!hasRegisteredOfficial) {
       setErrorMsg('You must confirm registration on the official ecell.in/eureka portal.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     if (!acceptTerms) {
       setErrorMsg('Please accept the competition terms and rules consent.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -170,29 +177,41 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
     const dupCheck = StorageService.checkDuplicate(startupName, leader.email, eurekaTeamId);
     if (dupCheck.isDuplicate) {
       setErrorMsg(dupCheck.reason || 'Duplicate registration detected.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    const saved = StorageService.saveTeam({
-      startupName,
-      stage,
-      domain,
-      problemStatement,
-      solution,
-      businessModel,
-      teamSize,
-      pitchDeckUrl,
-      pitchDeckFileName: pitchDeckFileName || 'Pitch_Deck.pdf',
-      demoUrl,
-      members,
-      eurekaDetails: {
-        eurekaTeamId,
-        necIdReferral,
-        hasRegisteredOfficial
-      }
-    });
+    setIsSubmitting(true);
+    setErrorMsg(null);
 
-    onSuccess(saved);
+    try {
+      const saved = StorageService.saveTeam({
+        startupName,
+        stage,
+        domain,
+        problemStatement,
+        solution,
+        businessModel,
+        teamSize,
+        pitchDeckUrl,
+        pitchDeckFileName: pitchDeckFileName || 'Pitch_Deck.pdf',
+        demoUrl,
+        members,
+        eurekaDetails: {
+          eurekaTeamId,
+          necIdReferral,
+          hasRegisteredOfficial
+        }
+      });
+
+      onSuccess(saved);
+    } catch (err: any) {
+      console.error('Submission error:', err);
+      setErrorMsg(err?.message || 'Error submitting team registration. Please try again.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -625,9 +644,21 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
 
               <button
                 type="submit"
-                className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-bold text-sm shadow-lg shadow-amber-500/20 hover:scale-105 transition-all flex items-center gap-2"
+                disabled={isSubmitting}
+                className={`px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-bold text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2 ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 cursor-pointer'
+                }`}
               >
-                <ShieldCheck className="w-5 h-5" /> Submit Team Registration
+                {isSubmitting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                    Submitting Team Registration...
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-5 h-5" /> Submit Team Registration
+                  </>
+                )}
               </button>
             </div>
 

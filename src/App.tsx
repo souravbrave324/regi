@@ -29,10 +29,12 @@ export function App() {
     };
   }, []);
 
-  // Handle successful registration submit (persists to Firestore + local state)
-  const handleRegistrationSuccess = async (newTeam: TeamRegistration) => {
+  // Handle successful registration submit (persists to local state & background Firestore sync)
+  const handleRegistrationSuccess = (newTeam: TeamRegistration) => {
     setRecentRegistration(newTeam);
-    await FirebaseService.saveRegistration(newTeam);
+    FirebaseService.saveRegistration(newTeam).catch((err) => {
+      console.warn('Background Firebase registration sync warning:', err);
+    });
   };
 
   // Update team status in real-time Firestore database
