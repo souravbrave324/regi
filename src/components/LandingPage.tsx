@@ -44,7 +44,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartRegistration })
             <a href="https://ecell.in/eureka" target="_blank" rel="noopener noreferrer" className="font-bold underline text-amber-400 hover:text-white inline-flex items-center gap-1">
               ecell.in/eureka <ExternalLink className="w-3 h-3" />
             </a>{' '}
-            using the <strong>NEC ID Referral</strong> by <strong>20 August 2026</strong> to remain eligible.
+            using the <strong>NEC ID:NEC2640259</strong> by <strong>20 August 2026</strong> to remain eligible.
           </span>
         </div>
       </div>
@@ -147,7 +147,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartRegistration })
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-400">Referral Required:</span>
-                    <span className="text-cyan-400 font-medium">NEC ID Referral</span>
+                    <span className="text-cyan-400 font-medium">NEC ID:NEC2640259</span>
                   </div>
                 </div>
 

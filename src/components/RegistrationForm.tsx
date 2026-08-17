@@ -43,7 +43,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
   ]);
 
   const [eurekaTeamId, setEurekaTeamId] = useState('');
-  const [necIdReferral, setNecIdReferral] = useState('');
+  const [necIdReferral, setNecIdReferral] = useState('NEC ID:NEC2640259');
   const [hasRegisteredOfficial, setHasRegisteredOfficial] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
@@ -548,7 +548,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
               <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">3</div>
               <div>
                 <h3 className="text-xl font-bold text-white font-heading">Eureka! Verification & Confirmation</h3>
-                <p className="text-xs text-slate-400">Confirm official portal registration and NEC ID</p>
+                <p className="text-xs text-slate-400">Confirm official portal registration and NEC ID (NEC ID:NEC2640259)</p>
               </div>
             </div>
 
@@ -574,7 +574,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                 <input
                   type="text"
                   required
-                  placeholder="Enter NEC Referral Code"
+                  placeholder="NEC ID:NEC2640259"
                   value={necIdReferral}
                   onChange={(e) => setNecIdReferral(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-sm"
@@ -595,7 +595,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                   <a href="https://ecell.in/eureka" target="_blank" rel="noopener noreferrer" className="underline font-bold text-amber-400">
                     ecell.in/eureka
                   </a>{' '}
-                  using our NEC ID referral prior to <strong>20 August 2026</strong>. <span className="text-rose-400">*</span>
+                  using our NEC ID:NEC2640259 referral prior to <strong>20 August 2026</strong>. <span className="text-rose-400">*</span>
                 </span>
               </label>
             </div>

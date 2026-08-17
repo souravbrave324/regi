@@ -25,7 +25,7 @@ const INITIAL_SEED_TEAMS: TeamRegistration[] = [
     ],
     eurekaDetails: {
       eurekaTeamId: 'EUR-2026-8812',
-      necIdReferral: 'NEC-IITB-7741',
+      necIdReferral: 'NEC ID:NEC2640259',
       hasRegisteredOfficial: true
     },
     status: 'Selected for Pitching',
@@ -63,7 +63,7 @@ const INITIAL_SEED_TEAMS: TeamRegistration[] = [
     ],
     eurekaDetails: {
       eurekaTeamId: 'EUR-2026-4419',
-      necIdReferral: 'NEC-BITS-3329',
+      necIdReferral: 'NEC ID:NEC2640259',
       hasRegisteredOfficial: true
     },
     status: 'Selected for Pitching',
@@ -98,7 +98,7 @@ const INITIAL_SEED_TEAMS: TeamRegistration[] = [
     ],
     eurekaDetails: {
       eurekaTeamId: 'EUR-2026-3105',
-      necIdReferral: 'NEC-DTU-1092',
+      necIdReferral: 'NEC ID:NEC2640259',
       hasRegisteredOfficial: true
     },
     status: 'Approved'

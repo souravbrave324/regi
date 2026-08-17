@@ -71,7 +71,7 @@ export const Footer: React.FC = () => {
             <li>Pitch Format: 2 Min Pitch + 3 Min Q&A</li>
             <li>Team Size Limit: 1 to 7 Members</li>
             <li>Registration Deadline: 20 August 2026</li>
-            <li>Referral Requirement: NEC ID Referral</li>
+            <li>Referral Requirement: NEC ID:NEC2640259</li>
           </ul>
         </div>
 
@@ -81,7 +81,7 @@ export const Footer: React.FC = () => {
           <ul className="space-y-1.5">
             <li>E-Cell IIT Bombay (NEC)</li>
             <li>Ghousia College of Engineering, Ramanagara</li>
-            <li>Support Email: nec@ecell.in</li>
+            <li>Support Email: x.0.0ecell@gmail.com</li>
           </ul>
         </div>
 
