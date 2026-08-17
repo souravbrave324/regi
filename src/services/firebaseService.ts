@@ -40,6 +40,12 @@ export class FirebaseService {
             ...team,
             serverTimestamp: Timestamp.now()
           });
+
+          // CRITICAL FIX: Do not overwrite a valid Cloud Storage URL in Firestore with a local placeholder
+          if (payload.pitchDeckUrl && payload.pitchDeckUrl.startsWith('[')) {
+            delete payload.pitchDeckUrl;
+          }
+
           await setDoc(docRef, payload, { merge: true });
 
           // If pitchDeckUrl is base64 data URI, sync file chunks to Firestore subcollection

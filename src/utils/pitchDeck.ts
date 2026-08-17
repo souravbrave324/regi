@@ -121,14 +121,9 @@ const openPresentationWindow = (
   contentUrl: string | null,
   isPPT: boolean
 ) => {
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-  // If on mobile and it's a PPT file, prompt direct download since mobile browsers don't render raw PPT natively
-  if (isMobile && isPPT && contentUrl) {
-    downloadPitchDeck(contentUrl, cleanName);
-    return;
-  }
-
+  // If on mobile and it's a PPT file, DO NOT prompt direct download since mobile browsers block async popups/downloads.
+  // We MUST show the fallback card with a physical button that the user can click.
+  
   const win = window.open('', '_blank');
   if (!win) {
     if (contentUrl) {
@@ -323,7 +318,7 @@ const openPresentationWindow = (
             <h2>${cleanName}</h2>
             <p><strong>Presentation File Verified:</strong> Uploaded presentation slides for E-Cell IIT Bombay Eureka! 2026 competition are stored securely in Cloud Firestore.<br/><br/>Click below to open and inspect the presentation slides on your device.</p>
             <div class="action-group">
-              ${contentUrl ? `<button class="btn btn-primary" style="justify-content-center; padding: 12px 20px; font-size: 14px;" onclick="downloadFile()">⬇ Open / Download Presentation File</button>` : ''}
+              ${contentUrl ? `<button class="btn btn-primary" style="justify-content: center; padding: 12px 20px; font-size: 14px;" onclick="downloadFile()">⬇ Open / Download Presentation File</button>` : ''}
             </div>
           </div>`
     }
@@ -456,8 +451,11 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
   const lowerFileName = cleanName.toLowerCase();
   const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
 
-  // If placeholder string or non-data URL, attempt resolving full base64 file data from Firestore chunks or local IndexedDB
-  if (cleanUrl.startsWith('[') || !cleanUrl.startsWith('data:')) {
+  // Open the window synchronously immediately to bypass Safari/mobile popup blockers
+  const win = window.open('', '_blank');
+
+  // If placeholder string, attempt resolving full base64 file data from Firestore chunks or local IndexedDB
+  if (cleanUrl.startsWith('[')) {
     const match = cleanUrl.match(/\[File Uploaded:\s*(.*?)\]/i);
     const extractedName = match ? match[1].trim() : cleanName;
 
@@ -496,8 +494,11 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
       const blob = new Blob([bytes], { type: mimeType });
       const blobUrl = URL.createObjectURL(blob);
 
+      if (win) win.close(); // Close the synchronous window, we'll open it via openPresentationWindow
+
       if (isPPT || mimeType.includes('presentation') || mimeType.includes('powerpoint')) {
-        downloadPitchDeck(cleanUrl, cleanName);
+        // We do not auto-download here to prevent double actions and popup blocks. 
+        // We just open the presentation window, where the user can click to download.
         openPresentationWindow(cleanName, blobUrl, true);
       } else {
         openPresentationWindow(cleanName, blobUrl, false);
@@ -505,17 +506,20 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
       return;
     } catch (e) {
       console.error('Error opening base64 pitch deck:', e);
+      if (win) win.close();
       downloadPitchDeck(cleanUrl, cleanName);
       return;
     }
   }
 
-  // 2. Placeholder string fallback (Generate valid PDF/PPT Blob & render Presentation Viewer window)
+  // 2. Placeholder string fallback (Generate valid PDF Blob & render Presentation Viewer window)
   if (cleanUrl.startsWith('[')) {
     const blob = createPresentationBlob(cleanName);
     const blobUrl = URL.createObjectURL(blob);
+    if (win) win.close();
+    
     if (isPPT) {
-      downloadPitchDeck(cleanUrl, cleanName);
+      // Don't auto-download the fallback PDF as PPT! That corrupts the file!
       openPresentationWindow(cleanName, blobUrl, true);
     } else {
       openPresentationWindow(cleanName, blobUrl, false);
@@ -531,12 +535,17 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
       const viewerUrl = targetUrl.includes('firebasestorage.googleapis.com') 
         ? `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(targetUrl)}`
         : targetUrl;
-      window.open(viewerUrl, '_blank', 'noopener,noreferrer');
+      if (win) {
+        win.location.href = viewerUrl;
+      } else {
+        window.open(viewerUrl, '_blank', 'noopener,noreferrer');
+      }
     } else {
-      downloadPitchDeck(targetUrl, cleanName);
+      if (win) win.close();
       openPresentationWindow(cleanName, targetUrl, true);
     }
   } else {
+    if (win) win.close();
     openPresentationWindow(cleanName, targetUrl, false);
   }
 };
