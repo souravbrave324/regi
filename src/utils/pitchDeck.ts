@@ -489,9 +489,17 @@ const openPresentationWindow = (
     function downloadFile() {
       const url = ${JSON.stringify(contentUrl || '')};
       if (!url) return;
+      const isPPT = ${JSON.stringify(isPPT)};
+      let downloadName = ${JSON.stringify(cleanName)};
+      
+      // If downloading a synthetic fallback record, use _Record.pdf to prevent PowerPoint file corruption warnings
+      if (isPPT && (url.startsWith('blob:') || !url.startsWith('data:application/vnd'))) {
+        downloadName = downloadName.replace(/\.pptx?$/i, '_Record.pdf');
+      }
+
       const a = document.createElement('a');
       a.href = url;
-      a.download = ${JSON.stringify(cleanName)};
+      a.download = downloadName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -723,10 +731,10 @@ export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf
     }
   }
 
-  // 3. Placeholder string fallback: download synthetic record file to avoid corrupting PowerPoint (.pptx) file extensions
+  // 3. Placeholder string fallback: download synthetic record PDF to avoid corrupting PowerPoint (.pptx) file extensions
   if (cleanUrl.startsWith('[')) {
-    const downloadName = cleanName;
-    const blob = await createPresentationBlob(downloadName, isPPT);
+    const downloadName = isPPT ? cleanName.replace(/\.pptx?$/i, '_Record.pdf') : cleanName;
+    const blob = await createPresentationBlob(downloadName, false);
     const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
