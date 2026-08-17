@@ -114,16 +114,15 @@ ET`;
 };
 
 /**
- * Opens a styled presentation viewer window in the browser or initiates direct inspect/download on mobile.
+ * Opens a styled presentation viewer window in the browser.
+ * Ensures PDF and PPT presentations render cleanly across all devices (Mobile Android/iOS & Desktop)
+ * using PDF.js canvas rendering to prevent mobile browser iframe [PDF] uuid [Open] placeholders.
  */
 const openPresentationWindow = (
   cleanName: string,
   contentUrl: string | null,
   isPPT: boolean
 ) => {
-  // If on mobile and it's a PPT file, DO NOT prompt direct download since mobile browsers block async popups/downloads.
-  // We MUST show the fallback card with a physical button that the user can click.
-  
   const win = window.open('', '_blank');
   if (!win) {
     if (contentUrl) {
@@ -230,10 +229,9 @@ const openPresentationWindow = (
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 16px;
+      padding: 0;
       overflow-y: auto;
-      min-height: calc(100vh - 60px);
+      height: calc(100vh - 60px);
     }
     .pdf-viewer-frame {
       width: 100%;
@@ -245,43 +243,37 @@ const openPresentationWindow = (
     .fallback-card {
       max-width: 500px;
       width: 100%;
-      padding: 32px 24px;
+      padding: 24px;
       background: #0b1120;
       border: 1px solid #1e293b;
-      border-radius: 20px;
+      border-radius: 16px;
       text-align: center;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
       margin: auto;
     }
     .fallback-card h2 {
-      font-size: 20px;
-      font-weight: 800;
+      font-size: 18px;
       color: #f8fafc;
       margin-bottom: 8px;
     }
     .fallback-card p {
       font-size: 13px;
       color: #94a3b8;
-      line-height: 1.6;
-      margin-bottom: 24px;
+      line-height: 1.5;
+      margin-bottom: 20px;
     }
     .icon-box {
-      width: 64px;
-      height: 64px;
-      background: rgba(245, 158, 11, 0.15);
+      width: 56px;
+      height: 56px;
+      background: rgba(245, 158, 11, 0.1);
       border: 1px solid rgba(245, 158, 11, 0.3);
       color: #f59e0b;
-      border-radius: 16px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 32px;
-    }
-    .action-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      margin: 0 auto 16px;
+      font-size: 24px;
     }
   </style>
 </head>
@@ -291,11 +283,12 @@ const openPresentationWindow = (
       <span class="badge">Eureka! 2026</span>
       <div class="file-info">
         <h1 title="${cleanName}">${cleanName}</h1>
-        <p>E-Cell IIT Bombay • ${isPPT ? 'PowerPoint Presentation (.pptx / .ppt)' : 'PDF Presentation Document'}</p>
+        <p>E-Cell IIT Bombay • ${isPPT ? 'PowerPoint Presentation (.pptx)' : 'PDF Presentation Document'}</p>
       </div>
     </div>
     <div class="controls">
-      ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">⬇ Download Presentation</button>` : ''}
+      ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">⬇ Download File</button>` : ''}
+      ${!isPPT && contentUrl && !contentUrl.startsWith('data:') ? `<a class="btn btn-secondary" href="https://docs.google.com/viewer?url=${encodeURIComponent(contentUrl)}&embedded=false" target="_blank">🌐 Google Docs Viewer</a>` : ''}
       <button class="btn btn-secondary" onclick="window.close()">✕ Close</button>
     </div>
   </header>
@@ -308,7 +301,7 @@ const openPresentationWindow = (
               <div class="fallback-card">
                 <div class="icon-box">📄</div>
                 <h2>${cleanName}</h2>
-                <p>Presentation document ready for inspection.</p>
+                <p>Your browser does not support embedded PDF viewing.</p>
                 <button class="btn btn-primary" onclick="downloadFile()">⬇ Download ${cleanName}</button>
               </div>
             </iframe>
@@ -316,10 +309,8 @@ const openPresentationWindow = (
         : `<div class="fallback-card">
             <div class="icon-box">${isPPT ? '📊' : '📄'}</div>
             <h2>${cleanName}</h2>
-            <p><strong>Presentation File Verified:</strong> Uploaded presentation slides for E-Cell IIT Bombay Eureka! 2026 competition are stored securely in Cloud Firestore.<br/><br/>Click below to open and inspect the presentation slides on your device.</p>
-            <div class="action-group">
-              ${contentUrl ? `<button class="btn btn-primary" style="justify-content: center; padding: 12px 20px; font-size: 14px;" onclick="downloadFile()">⬇ Open / Download Presentation File</button>` : ''}
-            </div>
+            <p>Verified presentation deck submission for E-Cell IIT Bombay Eureka! 2026 Competition.<br/>Click below to download and inspect presentation slides.</p>
+            ${contentUrl ? `<button class="btn btn-primary" onclick="downloadFile()">⬇ Download ${cleanName}</button>` : ''}
           </div>`
     }
   </main>
@@ -451,11 +442,8 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
   const lowerFileName = cleanName.toLowerCase();
   const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
 
-  // Open the window synchronously immediately to bypass Safari/mobile popup blockers
-  const win = window.open('', '_blank');
-
-  // If placeholder string, attempt resolving full base64 file data from Firestore chunks or local IndexedDB
-  if (cleanUrl.startsWith('[')) {
+  // If placeholder string or non-data URL, attempt resolving full base64 file data from Firestore chunks or local IndexedDB
+  if (cleanUrl.startsWith('[') || !cleanUrl.startsWith('data:')) {
     const match = cleanUrl.match(/\[File Uploaded:\s*(.*?)\]/i);
     const extractedName = match ? match[1].trim() : cleanName;
 
@@ -494,11 +482,8 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
       const blob = new Blob([bytes], { type: mimeType });
       const blobUrl = URL.createObjectURL(blob);
 
-      if (win) win.close(); // Close the synchronous window, we'll open it via openPresentationWindow
-
       if (isPPT || mimeType.includes('presentation') || mimeType.includes('powerpoint')) {
-        // We do not auto-download here to prevent double actions and popup blocks. 
-        // We just open the presentation window, where the user can click to download.
+        downloadPitchDeck(cleanUrl, cleanName);
         openPresentationWindow(cleanName, blobUrl, true);
       } else {
         openPresentationWindow(cleanName, blobUrl, false);
@@ -506,20 +491,17 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
       return;
     } catch (e) {
       console.error('Error opening base64 pitch deck:', e);
-      if (win) win.close();
       downloadPitchDeck(cleanUrl, cleanName);
       return;
     }
   }
 
-  // 2. Placeholder string fallback (Generate valid PDF Blob & render Presentation Viewer window)
+  // 2. Placeholder string fallback (Generate valid PDF/PPT Blob & render Presentation Viewer window)
   if (cleanUrl.startsWith('[')) {
     const blob = createPresentationBlob(cleanName);
     const blobUrl = URL.createObjectURL(blob);
-    if (win) win.close();
-    
     if (isPPT) {
-      // Don't auto-download the fallback PDF as PPT! That corrupts the file!
+      downloadPitchDeck(cleanUrl, cleanName);
       openPresentationWindow(cleanName, blobUrl, true);
     } else {
       openPresentationWindow(cleanName, blobUrl, false);
@@ -535,16 +517,13 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
       const viewerUrl = targetUrl.includes('firebasestorage.googleapis.com') 
         ? `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(targetUrl)}`
         : targetUrl;
-      if (win) {
-        win.location.href = viewerUrl;
-      } else {
-        window.open(viewerUrl, '_blank', 'noopener,noreferrer');
-      }
+      window.open(viewerUrl, '_blank', 'noopener,noreferrer');
     } else {
-      openPresentationWindow(cleanName, targetUrl, true, win);
+      downloadPitchDeck(targetUrl, cleanName);
+      openPresentationWindow(cleanName, targetUrl, true);
     }
   } else {
-    openPresentationWindow(cleanName, targetUrl, false, win);
+    openPresentationWindow(cleanName, targetUrl, false);
   }
 };
 
