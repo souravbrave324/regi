@@ -491,6 +491,33 @@ const openPresentationWindow = (
       if (!url) return;
       const isPPT = ${JSON.stringify(isPPT)};
       let downloadName = ${JSON.stringify(cleanName)};
+
+      if (url.startsWith('data:')) {
+        try {
+          const parts = url.split(',');
+          const mimeMatch = parts[0].match(/:(.*?);/);
+          const mimeType = mimeMatch ? mimeMatch[1] : (isPPT ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'application/pdf');
+          const base64Data = parts[1];
+          const binaryString = atob(base64Data);
+          const len = binaryString.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const blob = new Blob([bytes], { type: mimeType });
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = downloadName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+          return;
+        } catch (e) {
+          console.error('Download error:', e);
+        }
+      }
       
       // If downloading a synthetic fallback record, use _Record.pdf to prevent PowerPoint file corruption warnings
       if (isPPT && (url.startsWith('blob:') || !url.startsWith('data:application/vnd'))) {
@@ -812,31 +839,10 @@ export const openPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf', t
     }
   }
 
-  // 1. Base64 Data URI
+  // 1. Base64 Data URI (pass Data URI string directly to popup window to avoid parent Blob URL fetch restrictions)
   if (cleanUrl.startsWith('data:')) {
-    try {
-      const parts = cleanUrl.split(',');
-      const mimeMatch = parts[0].match(/:(.*?);/);
-      const mimeType = mimeMatch ? mimeMatch[1] : (isPPT ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'application/pdf');
-      
-      const base64Data = parts[1];
-      const binaryString = atob(base64Data);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-
-      const blob = new Blob([bytes], { type: mimeType });
-      const blobUrl = URL.createObjectURL(blob);
-
-      openPresentationWindow(cleanName, blobUrl, isPPT);
-      return;
-    } catch (e) {
-      console.error('Error opening base64 pitch deck:', e);
-      openPresentationWindow(cleanName, cleanUrl, isPPT);
-      return;
-    }
+    openPresentationWindow(cleanName, cleanUrl, isPPT);
+    return;
   }
 
   // 2. Placeholder string fallback (Generate valid PDF/PPT Blob & render Presentation Viewer window)
