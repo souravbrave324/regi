@@ -24,13 +24,29 @@ export class FirebaseService {
         q,
         (snapshot) => {
           if (!snapshot.empty) {
+            const localTeamsMap = new Map<string, string>();
+            StorageService.getTeams().forEach(t => {
+              if (t.pitchDeckUrl && t.pitchDeckUrl.startsWith('data:')) {
+                localTeamsMap.set(t.id, t.pitchDeckUrl);
+                if (t.pitchDeckFileName) localTeamsMap.set(t.pitchDeckFileName.toLowerCase(), t.pitchDeckUrl);
+                if (t.startupName) localTeamsMap.set(t.startupName.toLowerCase(), t.pitchDeckUrl);
+              }
+            });
+
             const firestoreTeams: TeamRegistration[] = snapshot.docs.map((docSnap) => {
               const data = docSnap.data();
               const teamId = docSnap.id;
               let pitchDeckUrl = data.pitchDeckUrl;
 
+              // Check LocalStorage and FileStorage for cached base64 file data
               if (!pitchDeckUrl || pitchDeckUrl.startsWith('[')) {
-                const cached = FileStorage.getFileSync(teamId) || FileStorage.getFileSync(data.pitchDeckFileName || '') || FileStorage.getFileSync(data.startupName || '');
+                const cached = localTeamsMap.get(teamId) ||
+                  localTeamsMap.get((data.pitchDeckFileName || '').toLowerCase()) ||
+                  localTeamsMap.get((data.startupName || '').toLowerCase()) ||
+                  FileStorage.getFileSync(teamId) ||
+                  FileStorage.getFileSync(data.pitchDeckFileName || '') ||
+                  FileStorage.getFileSync(data.startupName || '');
+                
                 if (cached) {
                   pitchDeckUrl = cached;
                 }
@@ -43,6 +59,7 @@ export class FirebaseService {
                 createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toISOString() : data.createdAt
               } as TeamRegistration;
             });
+
             callback(firestoreTeams, true);
           } else {
             const localTeams = StorageService.getTeams();

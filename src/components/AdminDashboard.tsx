@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Search, Download, FileText, Lock, LogOut, Users, Mail, Phone, Building } from 'lucide-react';
+import { ShieldCheck, Search, Download, FileText, Lock, LogOut, Users, Mail, Phone, Building, Upload } from 'lucide-react';
 import type { TeamRegistration, RegistrationStatus, TeamMember } from '../types';
 import { StorageService } from '../services/storageService';
 import { openPitchDeck, downloadPitchDeck } from '../utils/pitchDeck';
+import { FileStorage } from '../utils/fileStorage';
 
 interface AdminDashboardProps {
   teams: TeamRegistration[];
@@ -369,6 +370,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             >
                               <Download className="w-3.5 h-3.5 text-amber-400" />
                             </button>
+
+                            <label className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] transition-all cursor-pointer relative" title="Upload / Re-attach File">
+                              <Upload className="w-3.5 h-3.5 text-cyan-400" />
+                              <input
+                                type="file"
+                                accept=".pdf,.pptx,.ppt"
+                                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  const reader = new FileReader();
+                                  reader.onload = (ev) => {
+                                    const fileData = ev.target?.result as string;
+                                    if (fileData) {
+                                      FileStorage.saveFile(team.id, fileData);
+                                      FileStorage.saveFile(file.name, fileData);
+                                      FileStorage.saveFile(team.startupName, fileData);
+                                      onUpdateTeam(team.id, { pitchDeckUrl: fileData, pitchDeckFileName: file.name });
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }}
+                              />
+                            </label>
                           </div>
                         </td>
 
@@ -535,7 +560,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </h3>
 
               <div className="grid sm:grid-cols-2 gap-4 text-xs">
-                {selectedTeam.members.map((member, idx) => (
+                {selectedTeam.members.map((member: TeamMember, idx: number) => (
                   <div key={member.id || idx} className="p-4 rounded-2xl bg-[#0B1120] border border-slate-800 space-y-2 relative">
                     <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
                       <span className="font-bold text-white text-sm">{member.name}</span>
@@ -610,6 +635,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 >
                   <Download className="w-4 h-4 text-amber-400" /> Download File
                 </button>
+
+                <label className="px-4 py-2.5 rounded-xl bg-slate-800 text-cyan-300 font-bold text-xs flex items-center gap-2 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer shadow-md relative">
+                  <Upload className="w-4 h-4 text-cyan-400" /> Upload / Replace File
+                  <input
+                    type="file"
+                    accept=".pdf,.pptx,.ppt"
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        const fileData = ev.target?.result as string;
+                        if (fileData) {
+                          FileStorage.saveFile(selectedTeam.id, fileData);
+                          FileStorage.saveFile(file.name, fileData);
+                          FileStorage.saveFile(selectedTeam.startupName, fileData);
+                          onUpdateTeam(selectedTeam.id, { pitchDeckUrl: fileData, pitchDeckFileName: file.name });
+                          setSelectedTeam({ ...selectedTeam, pitchDeckUrl: fileData, pitchDeckFileName: file.name });
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                </label>
               </div>
 
               <button
