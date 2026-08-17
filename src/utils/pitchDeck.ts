@@ -1,7 +1,89 @@
 /**
  * Safely opens or views a team's pitch deck (PDF, PPT, PPTX, or Web Link).
- * Converts base64 Data URIs into Blob URLs so modern browsers can natively view or download
- * without security restrictions or blank pages.
+ * Prevents Chrome's about:blank#blocked security error by avoiding target="_blank"
+ * on download anchor links and utilizing Blob object URLs.
+ */
+
+/**
+ * Downloads a team's pitch deck directly to disk without opening blank tabs.
+ */
+export const downloadPitchDeck = async (url?: string, fileName = 'Pitch_Deck.pdf') => {
+  if (!url || !url.trim()) {
+    alert('No pitch deck file available to download.');
+    return;
+  }
+
+  const cleanUrl = url.trim();
+
+  // 1. Base64 Data URI (uploaded presentation or PDF file)
+  if (cleanUrl.startsWith('data:')) {
+    try {
+      const parts = cleanUrl.split(',');
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mimeType = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+      const base64Data = parts[1];
+      const binaryString = atob(base64Data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: mimeType });
+      const blobUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = fileName;
+      // CRITICAL: Do NOT set a.target = '_blank' here! It causes Chrome to block the window with about:blank#blocked
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      return;
+    } catch (e) {
+      console.error('Download base64 error:', e);
+    }
+  }
+
+  // 2. Placeholder string (e.g. recorded in database)
+  if (cleanUrl.startsWith('[')) {
+    alert(`File "${fileName}" is recorded with the team submission.`);
+    return;
+  }
+
+  // 3. Web URLs (HTTP / HTTPS)
+  const formattedUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
+
+  try {
+    // Attempt to fetch as blob to trigger direct local browser download without tab redirect
+    const response = await fetch(formattedUrl);
+    if (response.ok) {
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      return;
+    }
+  } catch (err) {
+    console.warn('Fetch fallback for pitch deck download:', err);
+  }
+
+  // Fallback if cross-origin fetch is restricted by CORS
+  const a = document.createElement('a');
+  a.href = formattedUrl;
+  a.download = fileName;
+  // CRITICAL: No target="_blank"
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+
+/**
+ * Safely opens or views a team's pitch deck presentation.
  */
 export const openPitchDeck = (url?: string, fileName = 'Pitch_Deck.pdf') => {
   if (!url || !url.trim()) {
@@ -13,7 +95,7 @@ export const openPitchDeck = (url?: string, fileName = 'Pitch_Deck.pdf') => {
   const lowerFileName = fileName.toLowerCase();
   const isPPT = lowerFileName.endsWith('.pptx') || lowerFileName.endsWith('.ppt');
 
-  // 1. Base64 Data URI (uploaded PDF, PPT, PPTX, or Image file)
+  // 1. Base64 Data URI
   if (cleanUrl.startsWith('data:')) {
     try {
       const parts = cleanUrl.split(',');
@@ -32,43 +114,24 @@ export const openPitchDeck = (url?: string, fileName = 'Pitch_Deck.pdf') => {
       const blobUrl = URL.createObjectURL(blob);
 
       if (isPPT || mimeType.includes('presentation') || mimeType.includes('powerpoint')) {
-        // Trigger automatic file download for PowerPoint presentations
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+        // Trigger clean file download for PPT/PPTX without target="_blank"
+        downloadPitchDeck(cleanUrl, fileName);
       } else {
         // Open PDF in a new tab using native Blob URL viewer
         const win = window.open(blobUrl, '_blank');
         if (!win) {
-          // If popup blocker intervened, trigger download fallback
-          const a = document.createElement('a');
-          a.href = blobUrl;
-          a.download = fileName;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+          downloadPitchDeck(cleanUrl, fileName);
         }
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
       }
       return;
     } catch (e) {
       console.error('Error opening base64 pitch deck:', e);
-      // Fallback: direct download
-      const a = document.createElement('a');
-      a.href = cleanUrl;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      downloadPitchDeck(cleanUrl, fileName);
       return;
     }
   }
 
-  // 2. Placeholder string (e.g. stored in database record)
+  // 2. Placeholder string
   if (cleanUrl.startsWith('[')) {
     const htmlContent = `
       <!DOCTYPE html>
@@ -106,58 +169,14 @@ export const openPitchDeck = (url?: string, fileName = 'Pitch_Deck.pdf') => {
   // 3. Web URLs (HTTP / HTTPS)
   let targetUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
 
-  // For online PPT / PPTX files on web, view directly via Microsoft Office Online Viewer
-  if (isPPT && !targetUrl.includes('officeapps.live.com') && !targetUrl.includes('drive.google.com') && !targetUrl.includes('canva.com')) {
-    targetUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(targetUrl)}`;
-  }
-
-  window.open(targetUrl, '_blank', 'noopener,noreferrer');
-};
-
-/**
- * Downloads a team's pitch deck directly to disk.
- */
-export const downloadPitchDeck = (url?: string, fileName = 'Pitch_Deck.pdf') => {
-  if (!url || !url.trim()) {
-    alert('No pitch deck file available to download.');
-    return;
-  }
-
-  const cleanUrl = url.trim();
-
-  if (cleanUrl.startsWith('data:')) {
-    try {
-      const parts = cleanUrl.split(',');
-      const mimeMatch = parts[0].match(/:(.*?);/);
-      const mimeType = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
-      const base64Data = parts[1];
-      const binaryString = atob(base64Data);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      const blob = new Blob([bytes], { type: mimeType });
-      const blobUrl = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-      return;
-    } catch (e) {
-      console.error('Download error:', e);
+  if (isPPT) {
+    if (targetUrl.includes('drive.google.com') || targetUrl.includes('canva.com') || targetUrl.includes('officeapps.live.com')) {
+      window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      // For standalone PPT / PPTX file URLs, download directly without opening blank tab
+      downloadPitchDeck(targetUrl, fileName);
     }
+  } else {
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
   }
-
-  // Fallback for web links
-  const a = document.createElement('a');
-  a.href = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
-  a.download = fileName;
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
 };
