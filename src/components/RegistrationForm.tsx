@@ -204,14 +204,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
         }
       });
 
-      // Pass the unsanitized team data (with the massive base64 pitchDeckUrl) 
-      // to the parent so Firebase Storage upload can succeed with the full file data.
-      const unSanitizedTeam = {
-        ...saved,
-        pitchDeckUrl: pitchDeckUrl 
-      };
-
-      onSuccess(unSanitizedTeam);
+      onSuccess(saved);
     } catch (err: any) {
       console.error('Submission error:', err);
       setErrorMsg(err?.message || 'Error submitting team registration. Please try again.');
