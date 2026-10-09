@@ -219,17 +219,17 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
       
       {/* Step Indicator Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="flex items-center justify-between border-b border-purple-200 pb-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-heading">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading">
               Eureka! Team Registration
             </h2>
-            <p className="text-xs text-slate-400">Step {currentStep} of 3 — Fill in team & pitch details</p>
+            <p className="text-xs text-slate-600">Step {currentStep} of 3 — Fill in team & pitch details</p>
           </div>
 
           <button
             onClick={onCancel}
-            className="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-[#0B1120] border border-slate-800"
+            className="text-xs text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg bg-purple-50 border border-purple-200"
           >
             Cancel
           </button>
@@ -252,19 +252,19 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
       )}
 
       {/* Form Container */}
-      <form onSubmit={handleSubmit} className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-8 bg-[#0B1120]">
+      <form onSubmit={handleSubmit} className="glass-panel p-6 sm:p-8 rounded-3xl border border-purple-200 space-y-8 bg-purple-50">
 
         {/* STEP 1: Startup Details */}
         {currentStep === 1 && (
           <div className="space-y-6">
-            <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">1</div>
-              <h3 className="text-xl font-bold text-white font-heading">Startup & Pitch Details</h3>
+            <div className="flex items-center gap-3 border-b border-purple-200 pb-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">1</div>
+              <h3 className="text-xl font-bold text-slate-900 font-heading">Startup & Pitch Details</h3>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                   Startup / Team Name <span className="text-rose-400">*</span>
                 </label>
                 <input
@@ -273,38 +273,38 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                   placeholder="e.g. NeuroPulse AI"
                   value={startupName}
                   onChange={(e) => setStartupName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                   Startup / Idea Stage <span className="text-rose-400">*</span>
                 </label>
                 <select
                   value={stage}
                   onChange={(e) => setStage(e.target.value as StartupStage)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white focus:outline-none focus:border-amber-500/50 text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 focus:outline-none focus:border-amber-500/50 text-sm"
                 >
                   {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                   Industry / Domain <span className="text-rose-400">*</span>
                 </label>
                 <select
                   value={domain}
                   onChange={(e) => setDomain(e.target.value as IndustryDomain)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white focus:outline-none focus:border-amber-500/50 text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 focus:outline-none focus:border-amber-500/50 text-sm"
                 >
                   {DOMAINS.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                   Team Size (1–7 Members) <span className="text-rose-400">*</span>
                 </label>
                 <div className="flex items-center gap-3">
@@ -316,7 +316,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                     onChange={(e) => handleTeamSizeChange(Number(e.target.value))}
                     className="w-full accent-amber-500"
                   />
-                  <span className="w-10 text-center font-bold text-amber-400 text-lg font-heading bg-[#050814] py-1 rounded-lg border border-slate-800">
+                  <span className="w-10 text-center font-bold text-amber-400 text-lg font-heading bg-white py-1 rounded-lg border border-purple-200">
                     {teamSize}
                   </span>
                 </div>
@@ -324,7 +324,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                 Problem Statement <span className="text-rose-400">*</span>
               </label>
               <textarea
@@ -333,12 +333,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                 placeholder="Describe the problem, target audience, and market gap..."
                 value={problemStatement}
                 onChange={(e) => setProblemStatement(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-sm"
+                className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                 Proposed Solution & Product <span className="text-rose-400">*</span>
               </label>
               <textarea
@@ -347,12 +347,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                 placeholder="Explain your technology, product features, and key innovation..."
                 value={solution}
                 onChange={(e) => setSolution(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-sm"
+                className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                 Business Model & Revenue Streams <span className="text-rose-400">*</span>
               </label>
               <input
@@ -361,21 +361,21 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                 placeholder="e.g. B2B SaaS Subscription ($499/mo) & API licensing"
                 value={businessModel}
                 onChange={(e) => setBusinessModel(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-sm"
+                className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-sm"
               />
             </div>
 
             {/* Pitch Deck File / Link */}
-            <div className="p-4 rounded-2xl bg-[#050814] border border-slate-800 space-y-4">
+            <div className="p-4 rounded-2xl bg-white border border-purple-200 space-y-4">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                   <FileText className="w-4 h-4" /> Pitch Deck Upload / View Link <span className="text-rose-400">*</span>
                 </label>
-                <span className="text-[11px] text-slate-400">PDF / PPTX (Max 10MB) or Drive URL</span>
+                <span className="text-[11px] text-slate-600">PDF / PPTX (Max 10MB) or Drive URL</span>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="relative border-2 border-dashed border-slate-700 hover:border-amber-500/50 rounded-xl p-4 text-center cursor-pointer transition-colors bg-[#0B1120]">
+                <div className="relative border-2 border-dashed border-purple-300 hover:border-amber-500/50 rounded-xl p-4 text-center cursor-pointer transition-colors bg-purple-50">
                   <input
                     type="file"
                     accept=".pdf,.pptx,application/pdf,application/vnd.ms-powerpoint"
@@ -383,10 +383,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   <Upload className="w-6 h-6 text-amber-400 mx-auto mb-1" />
-                  <span className="text-xs font-semibold text-slate-200 block">
+                  <span className="text-xs font-semibold text-slate-800 block">
                     {pitchDeckFileName ? pitchDeckFileName : 'Click to Upload Pitch Deck File'}
                   </span>
-                  <span className="text-[10px] text-slate-400">PDF or PPTX format</span>
+                  <span className="text-[10px] text-slate-600">PDF or PPTX format</span>
                 </div>
 
                 <div>
@@ -400,16 +400,16 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                         setPitchDeckUrl(e.target.value);
                         setPitchDeckFileName('Online Presentation Deck');
                       }}
-                      className="w-full pl-9 pr-4 py-3 rounded-xl bg-[#0B1120] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-xs"
+                      className="w-full pl-9 pr-4 py-3 rounded-xl bg-purple-50 border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-xs"
                     />
                   </div>
-                  <p className="text-[10px] text-slate-400 mt-1">Ensure link view permissions are public.</p>
+                  <p className="text-[10px] text-slate-600 mt-1">Ensure link view permissions are public.</p>
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                 Website / Product Demo Link (Optional)
               </label>
               <input
@@ -417,7 +417,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                 placeholder="https://yourstartup.com or prototype link"
                 value={demoUrl}
                 onChange={(e) => setDemoUrl(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-sm"
+                className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-sm"
               />
             </div>
 
@@ -439,18 +439,18 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
         {/* STEP 2: Team Members Details */}
         {currentStep === 2 && (
           <div className="space-y-6">
-            <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">2</div>
+            <div className="flex items-center gap-3 border-b border-purple-200 pb-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">2</div>
               <div>
-                <h3 className="text-xl font-bold text-white font-heading">Team Member Details</h3>
-                <p className="text-xs text-slate-400">Fill details for all {teamSize} team members</p>
+                <h3 className="text-xl font-bold text-slate-900 font-heading">Team Member Details</h3>
+                <p className="text-xs text-slate-600">Fill details for all {teamSize} team members</p>
               </div>
             </div>
 
             <div className="space-y-6">
               {members.map((member, index) => (
-                <div key={member.id} className="p-5 rounded-2xl bg-[#050814] border border-slate-800 space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                <div key={member.id} className="p-5 rounded-2xl bg-white border border-purple-200 space-y-4">
+                  <div className="flex items-center justify-between border-b border-purple-300 pb-2">
                     <span className="text-xs font-bold text-amber-400 flex items-center gap-2">
                       <Users className="w-4 h-4" />
                       Member #{index + 1} {index === 0 && '(Team Leader / Primary Contact)'}
@@ -464,7 +464,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
                         Full Name <span className="text-rose-400">*</span>
                       </label>
                       <input
@@ -473,12 +473,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                         placeholder="e.g. Aarav Mehta"
                         value={member.name}
                         onChange={(e) => handleMemberChange(index, 'name', e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B1120] border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 text-xs"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-xs"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
                         Role / Designation <span className="text-rose-400">*</span>
                       </label>
                       <input
@@ -487,12 +487,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                         placeholder="e.g. Founder & CEO / CTO"
                         value={member.role}
                         onChange={(e) => handleMemberChange(index, 'role', e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B1120] border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 text-xs"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-xs"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
                         Email Address <span className="text-rose-400">*</span>
                       </label>
                       <input
@@ -501,12 +501,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                         placeholder="aarav@college.edu"
                         value={member.email}
                         onChange={(e) => handleMemberChange(index, 'email', e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B1120] border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 text-xs"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-xs"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
                         Phone Number <span className="text-rose-400">*</span>
                       </label>
                       <input
@@ -515,12 +515,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                         placeholder="+91 98765 43210"
                         value={member.phone}
                         onChange={(e) => handleMemberChange(index, 'phone', e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B1120] border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 text-xs"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-xs"
                       />
                     </div>
 
                     <div className="sm:col-span-2">
-                      <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
                         College / Organization Name <span className="text-rose-400">*</span>
                       </label>
                       <input
@@ -529,7 +529,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                         placeholder="e.g. IIT Bombay / BITS Pilani / Company"
                         value={member.college}
                         onChange={(e) => handleMemberChange(index, 'college', e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B1120] border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/50 text-xs"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-xs"
                       />
                     </div>
                   </div>
@@ -541,7 +541,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="px-6 py-3 rounded-xl bg-[#050814] border border-slate-800 text-slate-300 hover:text-white font-semibold text-sm flex items-center gap-2"
+                className="px-6 py-3 rounded-xl bg-white border border-purple-200 text-slate-700 hover:text-slate-900 font-semibold text-sm flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
@@ -563,17 +563,17 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
         {/* STEP 3: Eureka Details & Confirmation */}
         {currentStep === 3 && (
           <div className="space-y-6">
-            <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">3</div>
+            <div className="flex items-center gap-3 border-b border-purple-200 pb-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">3</div>
               <div>
-                <h3 className="text-xl font-bold text-white font-heading">Eureka! Verification & Confirmation</h3>
-                <p className="text-xs text-slate-400">Confirm official portal registration and NEC ID (NEC ID:NEC2640259)</p>
+                <h3 className="text-xl font-bold text-slate-900 font-heading">Eureka! Verification & Confirmation</h3>
+                <p className="text-xs text-slate-600">Confirm official portal registration and NEC ID (NEC ID:NEC2640259)</p>
               </div>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                   Eureka! Team ID <span className="text-rose-400">*</span>
                 </label>
                 <input
@@ -582,12 +582,12 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                   placeholder="Enter Eureka! Team ID"
                   value={eurekaTeamId}
                   onChange={(e) => setEurekaTeamId(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                   NEC ID / Referral Code <span className="text-rose-400">*</span>
                 </label>
                 <input
@@ -596,7 +596,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                   placeholder="NEC ID:NEC2640259"
                   value={necIdReferral}
                   onChange={(e) => setNecIdReferral(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#050814] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-white border border-purple-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500/50 text-sm"
                 />
               </div>
             </div>
@@ -609,7 +609,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                   onChange={(e) => setHasRegisteredOfficial(e.target.checked)}
                   className="mt-1 w-4 h-4 accent-amber-500 rounded"
                 />
-                <span className="text-xs text-amber-200 leading-relaxed">
+                <span className="text-xs text-amber-900 leading-relaxed">
                   <strong>Official Platform Confirmation:</strong> I confirm that our team has registered on the official platform at{' '}
                   <a href="https://ecell.in/eureka" target="_blank" rel="noopener noreferrer" className="underline font-bold text-amber-400">
                     ecell.in/eureka
@@ -619,7 +619,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
               </label>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#050814] border border-slate-800 space-y-3">
+            <div className="p-4 rounded-2xl bg-white border border-purple-200 space-y-3">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -627,7 +627,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
                   onChange={(e) => setAcceptTerms(e.target.checked)}
                   className="mt-1 w-4 h-4 accent-amber-500 rounded"
                 />
-                <span className="text-xs text-slate-300 leading-relaxed">
+                <span className="text-xs text-slate-700 leading-relaxed">
                   I certify that all provided team information and pitch deck materials are authentic. I agree to abide by the competition rules and time limits (2 min pitch + 3 min Q&A). <span className="text-rose-400">*</span>
                 </span>
               </label>
@@ -637,7 +637,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess, o
               <button
                 type="button"
                 onClick={() => setCurrentStep(2)}
-                className="px-6 py-3 rounded-xl bg-[#050814] border border-slate-800 text-slate-300 hover:text-white font-semibold text-sm flex items-center gap-2"
+                className="px-6 py-3 rounded-xl bg-white border border-purple-200 text-slate-700 hover:text-slate-900 font-semibold text-sm flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
