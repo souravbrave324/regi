@@ -15,7 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogoutAdmin
 }) => {
   return (
-    <header className="sticky top-0 z-50 bg-[#050814]/95 border-b border-slate-800/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 bg-white/80 border-b border-purple-200 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -35,27 +35,27 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-heading font-extrabold text-xl text-white tracking-wide">
-                  NEC <span className="text-amber-400">2026</span>
+                <span className="font-heading font-extrabold text-xl text-slate-900 tracking-wide">
+                  NEC <span className="text-amber-500">2026</span>
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full badge-glow-amber">
                   Official Portal
                 </span>
               </div>
-              <p className="text-[11px] text-purple-300 font-semibold hidden sm:block">
+              <p className="text-[11px] text-purple-700 font-semibold hidden sm:block">
                 E-Cell IIT Bombay • NEC Referral Portal
               </p>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1 bg-[#0B1120] p-1.5 rounded-xl border border-slate-800">
+          <nav className="hidden md:flex items-center gap-1 bg-white p-1.5 rounded-xl border border-purple-200 shadow-sm">
             <button
               onClick={() => setActiveTab('landing')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === 'landing'
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-md font-semibold'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900 shadow-md font-bold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-purple-50'
               }`}
             >
               Overview & Guidelines
@@ -65,8 +65,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setActiveTab('register')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                 activeTab === 'register'
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-md font-semibold'
-                  : 'text-amber-400 hover:bg-amber-500/10'
+                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900 shadow-md font-bold'
+                  : 'text-amber-600 hover:bg-amber-50'
               }`}
             >
               <Rocket className="w-4 h-4" />
@@ -78,10 +78,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                 activeTab === 'leaderboard'
                   ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md font-semibold'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-purple-50'
               }`}
             >
-              <Trophy className="w-4 h-4 text-cyan-400" />
+              <Trophy className="w-4 h-4 text-cyan-600" />
               Jury & Pitching
             </button>
           </nav>
@@ -92,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               href="https://ecell.in/eureka"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-[#0B1120] border border-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all"
+              className="hidden lg:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-purple-200 text-slate-600 hover:text-cyan-700 hover:border-cyan-300 hover:bg-cyan-50 shadow-sm transition-all"
             >
               <span>ecell.in/eureka</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -104,16 +104,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setActiveTab('admin')}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border ${
                     activeTab === 'admin'
-                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                      : 'bg-[#0B1120] text-slate-200 border-slate-700 hover:bg-slate-800'
+                      ? 'bg-emerald-100 text-emerald-700 border-emerald-300'
+                      : 'bg-white text-slate-700 border-purple-200 hover:bg-purple-50'
                   }`}
                 >
-                  <UserCheck className="w-4 h-4 text-emerald-400" />
+                  <UserCheck className="w-4 h-4 text-emerald-600" />
                   Admin Dashboard
                 </button>
                 <button
                   onClick={onLogoutAdmin}
-                  className="text-xs text-slate-400 hover:text-rose-400 px-2 py-1"
+                  className="text-xs text-slate-500 hover:text-rose-600 px-2 py-1"
                   title="Logout Admin"
                 >
                   Exit
@@ -122,13 +122,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <button
                 onClick={() => setActiveTab('admin')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 border border-slate-800 ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 border ${
                   activeTab === 'admin'
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                    : 'bg-[#0B1120] text-slate-300 hover:text-white hover:bg-slate-800'
+                    ? 'bg-amber-100 text-amber-700 border-amber-300'
+                    : 'bg-white text-slate-600 border-purple-200 hover:text-slate-900 hover:bg-purple-50'
                 }`}
               >
-                <ShieldCheck className="w-4 h-4 text-amber-400" />
+                <ShieldCheck className="w-4 h-4 text-amber-600" />
                 Organizers Login
               </button>
             )}

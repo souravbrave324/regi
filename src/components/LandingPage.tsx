@@ -35,13 +35,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStartRegistration })
       
       {/* Critical Mandatory Alert Banner */}
       <div className="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-amber-500/20 border-b border-amber-500/30 py-3.5 px-4 text-center">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 text-xs sm:text-sm text-amber-200">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 text-xs sm:text-sm text-amber-900">
           <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider bg-amber-500 text-black px-2.5 py-0.5 rounded-full text-[11px]">
             <AlertTriangle className="w-3.5 h-3.5" /> Mandatory Requirement
           </span>
           <span>
             Participants MUST complete official registration on{' '}
-            <a href="https://ecell.in/eureka" target="_blank" rel="noopener noreferrer" className="font-bold underline text-amber-400 hover:text-white inline-flex items-center gap-1">
+            <a href="https://ecell.in/eureka" target="_blank" rel="noopener noreferrer" className="font-bold underline text-amber-700 hover:text-amber-900 inline-flex items-center gap-1">
               ecell.in/eureka <ExternalLink className="w-3 h-3" />
             </a>{' '}
             using the <strong>NEC ID:NEC2640259</strong> by <strong>20 August 2026</strong> to remain eligible.
