@@ -9,6 +9,7 @@ import { Footer } from './components/Footer';
 import type { TeamRegistration, JuryScore } from './types';
 import { FirebaseService } from './services/firebaseService';
 import { StorageService } from './services/storageService';
+import { RetroGrid } from './components/ui/retro-grid';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'landing' | 'register' | 'admin' | 'leaderboard'>('landing');
@@ -57,7 +58,9 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-white to-purple-200 text-slate-900 selection:bg-purple-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-white to-purple-200 text-slate-900 selection:bg-purple-500 selection:text-white relative overflow-hidden">
+      <RetroGrid className="z-0 opacity-40" />
+      <div className="relative z-10 flex flex-col min-h-screen w-full">
       
       {/* Global Navigation */}
       <Navbar
@@ -129,7 +132,8 @@ export function App() {
 
       {/* Global Footer */}
       <Footer />
-
+      
+      </div>
     </div>
   );
 }

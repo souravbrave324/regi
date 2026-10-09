@@ -30,6 +30,7 @@ export default {
         'pulse-glow': 'pulseGlow 3s infinite ease-in-out',
         'float': 'float 6s ease-in-out infinite',
         'gradient-x': 'gradientX 10s ease infinite',
+        'grid': 'grid 15s linear infinite',
       },
       keyframes: {
         pulseGlow: {
@@ -43,6 +44,10 @@ export default {
         gradientX: {
           '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
           '50%': { 'background-size': '200% 200%', 'background-position': 'right center' },
+        },
+        grid: {
+          '0%': { transform: 'translateY(-50%)' },
+          '100%': { transform: 'translateY(0)' },
         }
       }
     },
