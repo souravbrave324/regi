@@ -57,7 +57,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#050814] text-slate-100 selection:bg-amber-500 selection:text-black">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-white to-purple-200 text-slate-900 selection:bg-purple-500 selection:text-white">
       
       {/* Global Navigation */}
       <Navbar
