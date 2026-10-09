@@ -5,7 +5,7 @@ export const Footer: React.FC = () => {
   const mapsDirectionsUrl = "https://www.google.com/maps/dir/?api=1&destination=Ghousia+College+of+Engineering+B.M.+Road+Ramanagara+Karnataka+562159";
 
   return (
-    <footer className="border-t border-purple-200 bg-[#04060E] py-12 px-4 sm:px-6 lg:px-8 mt-20">
+    <footer className="border-t border-purple-200 bg-white py-12 px-4 sm:px-6 lg:px-8 mt-20">
       <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 text-xs text-slate-600">
         
         {/* Brand with Official E-Cell Logo */}
@@ -20,7 +20,7 @@ export const Footer: React.FC = () => {
               <span className="font-heading font-extrabold text-lg text-slate-900 block">
                 NEC <span className="text-amber-700">2026</span>
               </span>
-              <span className="text-[11px] text-purple-400 font-semibold block">
+              <span className="text-[11px] text-purple-700 font-semibold block">
                 E-Cell IIT Bombay • NEC
               </span>
             </div>
@@ -42,7 +42,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Venue & Location Directions */}
-        <div className="space-y-3 md:col-span-1 p-4 rounded-2xl bg-[#080D1A] border border-amber-500/30 shadow-lg">
+        <div className="space-y-3 md:col-span-1 p-4 rounded-2xl bg-purple-50 border border-amber-200 shadow-lg">
           <div className="flex items-center gap-2 text-amber-700 font-bold uppercase text-[11px] tracking-wider">
             <MapPin className="w-4 h-4 text-amber-700 shrink-0" />
             <span>Event Venue</span>
@@ -87,7 +87,7 @@ export const Footer: React.FC = () => {
 
       </div>
 
-      <div className="max-w-7xl mx-auto border-t border-slate-900 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
+      <div className="max-w-7xl mx-auto border-t border-purple-200 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
         <span>© 2026 National Entrepreneurship Challenge (NEC) • E-Cell IIT Bombay & Ghousia College of Engineering. All rights reserved.</span>
         <span className="flex items-center gap-1">
           Built with <Heart className="w-3 h-3 text-rose-500 fill-rose-500" /> for startup founders
