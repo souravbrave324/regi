@@ -66,17 +66,17 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-purple-200 pb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-extrabold text-white font-heading">
+            <h1 className="text-3xl font-extrabold text-slate-900 font-heading">
               Pitching Management & Jury Scoring
             </h1>
             <span className="badge-glow-cyan px-2.5 py-0.5 rounded-full text-xs font-bold uppercase">
               Evaluator Panel
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-600 mt-1">
             Evaluate 2-min pitch presentations across 5 key rubric metrics & trigger winner declarations.
           </p>
         </div>
@@ -91,8 +91,8 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
 
       <div className="grid lg:grid-cols-12 gap-8">
         <div className="lg:col-span-7 space-y-6">
-          <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3 bg-[#0B1120]">
-            <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
+          <div className="glass-panel p-5 rounded-2xl border border-purple-200 space-y-3 bg-purple-50">
+            <label className="text-xs font-bold text-amber-700 uppercase tracking-wider block">
               Select Team for Live Evaluation
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -116,19 +116,19 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
                     }}
                     className={`p-3.5 rounded-xl text-left transition-all border ${
                       isSelected
-                        ? 'bg-amber-500/15 border-amber-500/60 shadow-md'
-                        : 'bg-[#050814] border-slate-800 hover:bg-slate-900'
+                        ? 'bg-amber-50 border-amber-300 shadow-md'
+                        : 'bg-white border-purple-200 hover:bg-purple-100'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-white text-xs">{team.startupName}</span>
+                      <span className="font-bold text-slate-900 text-xs">{team.startupName}</span>
                       {hasScore && (
-                        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-md">
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
                           {team.juryScore?.totalScore}/50
                         </span>
                       )}
                     </div>
-                    <div className="text-[10px] text-slate-400 mt-1">{team.domain}</div>
+                    <div className="text-[10px] text-slate-600 mt-1">{team.domain}</div>
                   </button>
                 );
               })}
@@ -136,27 +136,27 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
           </div>
 
           {currentTeam ? (
-            <form onSubmit={handleScoreSubmit} className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6 bg-[#0B1120]">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+            <form onSubmit={handleScoreSubmit} className="glass-panel p-6 sm:p-8 rounded-3xl border border-purple-200 space-y-6 bg-purple-50">
+              <div className="flex items-center justify-between border-b border-purple-200 pb-4">
                 <div>
-                  <span className="text-xs font-mono text-amber-400 font-bold">{currentTeam.id}</span>
-                  <h3 className="text-xl font-bold text-white font-heading">{currentTeam.startupName}</h3>
+                  <span className="text-xs font-mono text-amber-700 font-bold">{currentTeam.id}</span>
+                  <h3 className="text-xl font-bold text-slate-900 font-heading">{currentTeam.startupName}</h3>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Total Score</span>
-                  <span className="text-2xl font-extrabold text-amber-400 font-heading">
+                  <span className="text-[10px] text-slate-600 uppercase font-semibold block">Total Score</span>
+                  <span className="text-2xl font-extrabold text-amber-700 font-heading">
                     {liveTotal} <span className="text-xs text-slate-500">/ 50</span>
                   </span>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#050814] border border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-300 font-medium">Presentation Deck:</span>
+              <div className="p-3.5 rounded-xl bg-white border border-purple-200 flex items-center justify-between text-xs">
+                <span className="text-slate-700 font-medium">Presentation Deck:</span>
                 <button
                   type="button"
                   onClick={() => openPitchDeck(currentTeam.pitchDeckUrl, currentTeam.pitchDeckFileName, currentTeam.id)}
-                  className="text-amber-400 hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                  className="text-amber-700 hover:underline font-bold flex items-center gap-1 cursor-pointer"
                 >
                   <FileText className="w-4 h-4" /> Open Pitch Deck
                 </button>
@@ -165,8 +165,8 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
               <div className="space-y-4">
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="font-semibold text-slate-200">1. Innovation & Problem Fit</span>
-                    <span className="font-bold text-amber-400">{innovation} / 10</span>
+                    <span className="font-semibold text-slate-800">1. Innovation & Problem Fit</span>
+                    <span className="font-bold text-amber-700">{innovation} / 10</span>
                   </div>
                   <input
                     type="range"
@@ -180,8 +180,8 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
 
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="font-semibold text-slate-200">2. Market Opportunity & Business Model</span>
-                    <span className="font-bold text-amber-400">{marketPotential} / 10</span>
+                    <span className="font-semibold text-slate-800">2. Market Opportunity & Business Model</span>
+                    <span className="font-bold text-amber-700">{marketPotential} / 10</span>
                   </div>
                   <input
                     type="range"
@@ -195,8 +195,8 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
 
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="font-semibold text-slate-200">3. Traction & Technical Feasibility</span>
-                    <span className="font-bold text-amber-400">{feasibility} / 10</span>
+                    <span className="font-semibold text-slate-800">3. Traction & Technical Feasibility</span>
+                    <span className="font-bold text-amber-700">{feasibility} / 10</span>
                   </div>
                   <input
                     type="range"
@@ -210,8 +210,8 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
 
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="font-semibold text-slate-200">4. Pitch Quality & Q&A Response (2 min + 3 min)</span>
-                    <span className="font-bold text-amber-400">{pitchQuality} / 10</span>
+                    <span className="font-semibold text-slate-800">4. Pitch Quality & Q&A Response (2 min + 3 min)</span>
+                    <span className="font-bold text-amber-700">{pitchQuality} / 10</span>
                   </div>
                   <input
                     type="range"
@@ -225,8 +225,8 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
 
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="font-semibold text-slate-200">5. Team Execution Capability</span>
-                    <span className="font-bold text-amber-400">{teamCapability} / 10</span>
+                    <span className="font-semibold text-slate-800">5. Team Execution Capability</span>
+                    <span className="font-bold text-amber-700">{teamCapability} / 10</span>
                   </div>
                   <input
                     type="range"
@@ -241,19 +241,19 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
+                  <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">
                     Evaluator / Jury Name
                   </label>
                   <input
                     type="text"
                     value={evaluatorName}
                     onChange={(e) => setEvaluatorName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#050814] border border-slate-800 text-white text-xs"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-purple-200 text-slate-900 text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
+                  <label className="block text-xs font-semibold text-slate-600 uppercase mb-1">
                     Qualitative Feedback
                   </label>
                   <input
@@ -261,7 +261,7 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
                     placeholder="e.g. Strong clinical traction & market fit"
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#050814] border border-slate-800 text-white text-xs"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-purple-200 text-slate-900 text-xs"
                   />
                 </div>
               </div>
@@ -274,18 +274,18 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
               </button>
             </form>
           ) : (
-            <div className="glass-panel p-12 rounded-3xl border border-slate-800 text-center text-slate-400 bg-[#0B1120]">
+            <div className="glass-panel p-12 rounded-3xl border border-purple-200 text-center text-slate-600 bg-purple-50">
               No teams selected for pitching. Change team status to "Selected for Pitching" in Admin Dashboard.
             </div>
           )}
         </div>
 
         <div className="lg:col-span-5 space-y-6">
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6 bg-[#0B1120]">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-purple-200 space-y-6 bg-purple-50">
+            <div className="flex items-center justify-between border-b border-purple-200 pb-4">
               <div className="flex items-center gap-2">
-                <Trophy className="w-6 h-6 text-amber-400" />
-                <h3 className="text-xl font-bold text-white font-heading">
+                <Trophy className="w-6 h-6 text-amber-700" />
+                <h3 className="text-xl font-bold text-slate-900 font-heading">
                   Pitching Leaderboard
                 </h3>
               </div>
@@ -297,28 +297,28 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
             {leaderboard.length >= 1 && (
               <div className="grid grid-cols-3 gap-2 text-center pt-2">
                 {leaderboard[1] ? (
-                  <div className="p-3 rounded-xl bg-[#050814] border border-slate-700/60 space-y-1">
-                    <Medal className="w-5 h-5 text-slate-300 mx-auto" />
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Rank #2</span>
-                    <span className="text-xs font-bold text-white truncate block">{leaderboard[1].startupName}</span>
-                    <span className="text-xs font-mono font-bold text-slate-300 block">{leaderboard[1].juryScore?.totalScore}/50</span>
+                  <div className="p-3 rounded-xl bg-white border border-purple-200 space-y-1">
+                    <Medal className="w-5 h-5 text-slate-700 mx-auto" />
+                    <span className="text-[10px] text-slate-600 uppercase font-bold block">Rank #2</span>
+                    <span className="text-xs font-bold text-slate-900 truncate block">{leaderboard[1].startupName}</span>
+                    <span className="text-xs font-mono font-bold text-slate-700 block">{leaderboard[1].juryScore?.totalScore}/50</span>
                   </div>
                 ) : <div />}
 
                 {leaderboard[0] && (
                   <div className="p-3.5 rounded-xl bg-amber-500/20 border border-amber-500/60 space-y-1 -mt-3 shadow-lg shadow-amber-500/10">
-                    <Trophy className="w-6 h-6 text-amber-400 mx-auto" />
-                    <span className="text-[10px] text-amber-400 uppercase font-bold block">Winner #1</span>
-                    <span className="text-xs font-extrabold text-white truncate block">{leaderboard[0].startupName}</span>
-                    <span className="text-sm font-mono font-extrabold text-amber-400 block">{leaderboard[0].juryScore?.totalScore}/50</span>
+                    <Trophy className="w-6 h-6 text-amber-700 mx-auto" />
+                    <span className="text-[10px] text-amber-700 uppercase font-bold block">Winner #1</span>
+                    <span className="text-xs font-extrabold text-slate-900 truncate block">{leaderboard[0].startupName}</span>
+                    <span className="text-sm font-mono font-extrabold text-amber-700 block">{leaderboard[0].juryScore?.totalScore}/50</span>
                   </div>
                 )}
 
                 {leaderboard[2] ? (
-                  <div className="p-3 rounded-xl bg-[#050814] border border-slate-800 space-y-1">
+                  <div className="p-3 rounded-xl bg-white border border-purple-200 space-y-1">
                     <Award className="w-5 h-5 text-amber-700 mx-auto" />
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Rank #3</span>
-                    <span className="text-xs font-bold text-white truncate block">{leaderboard[2].startupName}</span>
+                    <span className="text-[10px] text-slate-600 uppercase font-bold block">Rank #3</span>
+                    <span className="text-xs font-bold text-slate-900 truncate block">{leaderboard[2].startupName}</span>
                     <span className="text-xs font-mono font-bold text-amber-600 block">{leaderboard[2].juryScore?.totalScore}/50</span>
                   </div>
                 ) : <div />}
@@ -329,25 +329,25 @@ export const JuryScoring: React.FC<JuryScoringProps> = ({ teams, onUpdateScore }
               {leaderboard.map((team, index) => (
                 <div
                   key={team.id}
-                  className="p-3 rounded-xl bg-[#050814] border border-slate-800 flex items-center justify-between text-xs"
+                  className="p-3 rounded-xl bg-white border border-purple-200 flex items-center justify-between text-xs"
                 >
                   <div className="flex items-center gap-3">
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] ${
-                      index === 0 ? 'bg-amber-500 text-black' : index === 1 ? 'bg-slate-300 text-black' : index === 2 ? 'bg-amber-700 text-white' : 'bg-slate-800 text-slate-400'
+                      index === 0 ? 'bg-amber-500 text-black' : index === 1 ? 'bg-slate-300 text-black' : index === 2 ? 'bg-amber-700 text-slate-900' : 'bg-slate-800 text-slate-600'
                     }`}>
                       {index + 1}
                     </span>
                     <div>
-                      <span className="font-bold text-white block">{team.startupName}</span>
-                      <span className="text-[10px] text-slate-400">{team.domain}</span>
+                      <span className="font-bold text-slate-900 block">{team.startupName}</span>
+                      <span className="text-[10px] text-slate-600">{team.domain}</span>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <span className="font-mono font-extrabold text-amber-400 text-sm block">
+                    <span className="font-mono font-extrabold text-amber-700 text-sm block">
                       {team.juryScore?.totalScore} <span className="text-[10px] text-slate-500">/ 50</span>
                     </span>
-                    <span className="text-[10px] text-slate-400">Avg: {team.juryScore?.averageScore}</span>
+                    <span className="text-[10px] text-slate-600">Avg: {team.juryScore?.averageScore}</span>
                   </div>
                 </div>
               ))}
